@@ -1,0 +1,20 @@
+{
+  "name": "mockingoose",
+  "version": "1.0.0",
+  "description": "A Jest package for mocking mongoose models",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alonronin/mockingoose.git"
+  },
+  "keywords": ["jest", "mock", "mongoose"],
+  "author": "",
+  "license": "The Unlicense",
+  "bugs": {
+    "url": "https://github.com/alonronin/mockingoose/issues"
+  },
+  "homepage": "https://github.com/alonronin/mockingoose#readme"
+}
