@@ -7,15 +7,25 @@ $ npm i mockingoose -D
 ```
 
 ## Usage
-```javascript
+```js
 import mockingoose from 'mockingoose';
+import model from './model';
 
 const doc = {
-    _id: '1',
+    _id: '507f191e810c19729de860ea',
     name: 'name',
     value: 'value'
 };
 
 mockingoose.findById.returns(doc);
 
+describe('test mongoose model', () => {
+    it('should return the doc with findById', () => {
+        return model
+            .findById({ _id: '507f191e810c19729de860ea'})
+            .then(_doc => {
+                expect(_doc).toEqual(doc);
+            })
+    })
+})
 ```
