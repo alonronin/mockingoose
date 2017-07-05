@@ -8,6 +8,20 @@ $ npm i mockingoose -D
 
 ## Usage
 ```js
+// model.js
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+
+const schema = Schema({
+    name: String,
+    value: String
+})
+
+export default mongoose.model('Model', schema);
+```
+
+```js
+// __tests__/model.test.js
 import mockingoose from 'mockingoose';
 import model from './model';
 
