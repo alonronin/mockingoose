@@ -1,4 +1,5 @@
 # Mockingoose
+![logo]
 > A Jest package for mocking mongoose models
 
 ## Installation
@@ -43,3 +44,4 @@ describe('test mongoose model', () => {
     })
 })
 ```
+[logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
