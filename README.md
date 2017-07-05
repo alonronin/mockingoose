@@ -16,6 +16,6 @@ const doc = {
     value: 'value'
 };
 
-mockingoose.find.returns(doc);
+mockingoose.findById.returns(doc);
 
 ```
