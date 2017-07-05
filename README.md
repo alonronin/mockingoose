@@ -17,7 +17,7 @@ const doc = {
     value: 'value'
 };
 
-mockingoose.findById.returns(doc);
+mockingoose.Model.findById.toReturn(doc);
 
 describe('test mongoose model', () => {
     it('should return the doc with findById', () => {
