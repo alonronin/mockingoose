@@ -2,7 +2,7 @@
   "name": "mockingoose",
   "version": "1.1.0",
   "description": "A Jest package for mocking mongoose models",
-  "main": "index.js",
+  "main": "./lib",
   "scripts": {
     "test": "jest",
     "start": "babel-node ./src",

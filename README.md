@@ -66,10 +66,10 @@ describe('test mongoose User model', () => {
 ```
 ### Operation available:
 
-[x] `find` - for all find queries
-[x] `update` - for update queries
-[x] `save` - for create, and save queries
-[] `remove` - for removing documents
+- [x] `find` - for all find queries
+- [x] `update` - for update queries
+- [x] `save` - for create, and save queries
+- [ ] `remove` - for removing documents
 
 ### Notes
 
