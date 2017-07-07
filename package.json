@@ -1,20 +1,34 @@
 {
   "name": "mockingoose",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Jest package for mocking mongoose models",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "start": "babel-node ./src",
+    "build": "babel src -d lib -s"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alonronin/mockingoose.git"
   },
-  "keywords": ["jest", "mock", "mongoose"],
+  "keywords": [
+    "jest",
+    "mock",
+    "mongoose"
+  ],
   "author": "",
   "license": "The Unlicense",
   "bugs": {
     "url": "https://github.com/alonronin/mockingoose/issues"
   },
-  "homepage": "https://github.com/alonronin/mockingoose#readme"
+  "homepage": "https://github.com/alonronin/mockingoose#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "jest": "^20.0.4"
+  },
+  "peerDependencies": {
+    "mongoose": "^4.11.1"
+  }
 }
