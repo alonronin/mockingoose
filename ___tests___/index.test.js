@@ -125,11 +125,33 @@ describe('mockingoose', () => {
 
           mockingoose.User.toReturn(mocked, op);
 
-          User[op]((err, doc) => {
-            expect(err).toBeNull();
-            expect(doc).toBe(mocked);
-            done();
-          });
+          switch(op) {
+            case 'distinct':
+            case 'findOne':
+            case 'findOneAndRemove':
+              User[op]({}, (err, doc) => {
+                expect(err).toBeNull();
+                expect(doc).toBe(mocked);
+                done();
+              });
+
+              break;
+            case 'findOneAndUpdate':
+              User[op]({}, {}, {}, (err, doc) => {
+                expect(err).toBeNull();
+                expect(doc).toBe(mocked);
+                done();
+              });
+
+              break;
+            default:
+              User[op]((err, doc) => {
+                expect(err).toBeNull();
+                expect(doc).toBe(mocked);
+                done();
+              });
+          }
+
         });
       })
     })

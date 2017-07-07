@@ -69,18 +69,17 @@ describe('test mongoose User model', () => {
 - [x] `find` - for find query
 - [x] `findOne` - for findOne query
 - [x] `count` - for count query
-- [ ] `distinct` - for distinct query
-- [ ] `findOneAndUpdate` - for findOneAndUpdate query
-- [ ] `findOneAndRemove` - for findOneAndRemove query
+- [x] `distinct` - for distinct query
+- [x] `findOneAndUpdate` - for findOneAndUpdate query
+- [x] `findOneAndRemove` - for findOneAndRemove query
 - [x] `update` - for update query
 - [x] `save` - for create, and save documents `Model.create()` or `Model.save()` or `doc.save()`
 - [x] `remove` - for remove query
-- [ ] `deleteOne` - for deleteOne query
-- [ ] `deleteMany` - for deleteMany query
+- [x] `deleteOne` - for deleteOne query
+- [x] `deleteMany` - for deleteMany query
 
 ### Notes
-All operations works with `exec` or `promise`.  
-the unchecked ones does not work with node callback syntax.
+All operations works with `exec`, `promise` and `callback`.  
 
 if you are using `Model.create` and you don't pass a mock with mockingoose,  
 you'll receive the mongoose created doc (with ObjectId and transformations)

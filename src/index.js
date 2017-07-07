@@ -28,12 +28,37 @@ const mockedReturn = (op, modelName, cb) => {
 };
 
 ops.forEach(op => {
-  mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (condition, cb) {
+  mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (criteria, doc, options, callback) {
+    switch (arguments.length) {
+      case 3:
+        if (typeof options === 'function') {
+          callback = options;
+          options = {};
+        }
+        break;
+      case 2:
+        if (typeof doc === 'function') {
+          callback = doc;
+          doc = criteria;
+          criteria = undefined;
+        }
+        options = undefined;
+        break;
+      case 1:
+        if (typeof criteria === 'function') {
+          callback = criteria;
+          criteria = options = doc = undefined;
+        } else {
+          doc = criteria;
+          criteria = options = undefined;
+        }
+    }
+
     this.op = op;
 
-    if(!cb) return this;
+    if(!callback) return this;
 
-    return this.exec.call(this, cb);
+    return this.exec.call(this, callback);
   })
 });
 
