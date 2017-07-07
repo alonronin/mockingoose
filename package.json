@@ -30,5 +30,8 @@
   },
   "peerDependencies": {
     "mongoose": "^4.11.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

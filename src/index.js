@@ -3,6 +3,18 @@ import mongoose from 'mongoose';
 mongoose.Promise = Promise;
 mongoose.connect = jest.fn();
 
+const ops = [
+  'find',
+  'findOne',
+  'count',
+  'distinct',
+  'findOneAndUpdate',
+  'findOneAndRemove',
+  'remove',
+  'deleteOne',
+  'deleteMany'
+];
+
 const mockedReturn = (op, modelName, cb) => {
   const mock = mockingoose.__mocks[modelName][op];
   let err = null;
@@ -14,6 +26,16 @@ const mockedReturn = (op, modelName, cb) => {
   if(err) return Promise.reject(err);
   return Promise.resolve(mock)
 };
+
+ops.forEach(op => {
+  mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (condition, cb) {
+    this.op = op;
+
+    if(!cb) return this;
+
+    return this.exec.call(this, cb);
+  })
+});
 
 mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   const { op, model: { modelName }} = this;
