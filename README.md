@@ -64,6 +64,30 @@ describe('test mongoose User model', () => {
     })
 })
 ```
+#### mockingoose#ModelName#reset(operation = undefined)
+
+will reset Model mock, if pass an operation, will reset only this operation mock.
+
+```js
+it('should reset model mock', () => {
+  mockingoose.User.toReturn({ test: 1 });
+  mockingoose.User.toReturn({ test: 2 }, 'save');
+  
+  mockingoose.User.reset(); // will reset all operations;
+  mockingoose.User.reset('find'); // will reset only find operations;
+})
+```
+
+#### mockingoose#resetAll()
+
+will reset all mocks.
+
+```js
+beforeEach(() => {
+  mockingoose.resetAll();
+})
+```
+
 ### Operation available:
 
 - [x] `find` - for find query
@@ -99,5 +123,7 @@ return User
 ```
 
 no connection is made to the database (mongoose.connect is jest.fn())
+
+check tests for more, feel free to fork and contribute.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
