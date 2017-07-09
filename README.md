@@ -124,6 +124,8 @@ return User
 
 no connection is made to the database (mongoose.connect is jest.fn())
 
+will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
+
 check tests for more, feel free to fork and contribute.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg

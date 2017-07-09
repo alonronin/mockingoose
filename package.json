@@ -33,5 +33,6 @@
   },
   "jest": {
     "testEnvironment": "node"
-  }
+  },
+  "engines": { "node" : ">=6.4.0" }
 }
