@@ -1,6 +1,6 @@
 {
   "name": "mockingoose",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
   "scripts": {
@@ -34,5 +34,7 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "engines": { "node" : ">=6.4.0" }
+  "engines": {
+    "node": ">=6.4.0"
+  }
 }
