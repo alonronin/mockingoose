@@ -15,8 +15,13 @@ const ops = [
   'deleteMany'
 ];
 
-const mockedReturn = (op, modelName, cb) => {
-  const mock = mockingoose.__mocks[modelName][op];
+const mockedReturn = function(cb) {
+  const { op, model: { modelName }} = this;
+
+  let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
+
+  if(!mock && op === 'save') { mock = this;}
+
   let err = null;
 
   if(mock instanceof Error) err = mock;
@@ -24,6 +29,7 @@ const mockedReturn = (op, modelName, cb) => {
   if(cb) return cb(err, mock);
 
   if(err) return Promise.reject(err);
+
   return Promise.resolve(mock)
 };
 
@@ -63,9 +69,7 @@ ops.forEach(op => {
 });
 
 mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
-  const { op, model: { modelName }} = this;
-
-  return mockedReturn(op, modelName, cb);
+  return mockedReturn.call(this, cb);
 });
 
 mongoose.Model.prototype.save = function(options, cb) {
@@ -74,13 +78,16 @@ mongoose.Model.prototype.save = function(options, cb) {
 
   if(typeof options === 'function') cb = options;
 
-  return mockedReturn(op, modelName, cb);
+  Object.assign(this, { op, model: { modelName }});
+
+  return mockedReturn.call(this, cb);
 };
 
 jest.doMock('mongoose', () => mongoose);
 
 const target = {
-  __mocks: {}
+  __mocks: {},
+  resetAll() { this.__mocks = {} }
 };
 
 const traps = {
@@ -92,6 +99,11 @@ const traps = {
         target.__mocks[prop] = {
           [op]: o
         };
+      },
+
+      reset(op) {
+        if(op) return delete target.__mocks[prop][op];
+        delete target.__mocks[prop]
       }
     }
   }

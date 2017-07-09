@@ -2,6 +2,8 @@ import mockingoose from '../src/index';
 import User from './User';
 
 describe('mockingoose', () => {
+  beforeEach(() => mockingoose.resetAll());
+
   describe('explicit tests', () => {
     it('should validate', () => {
       const user = new User({
@@ -28,24 +30,32 @@ describe('mockingoose', () => {
     });
 
     it('should update with exec and callback', (done) => {
-      mockingoose.User.toReturn({ email: 'alon@ronin.co.il' }, 'update');
+      mockingoose.User.toReturn({ email: 'name@mail.com' }, 'update');
 
       User
-      .update({ email: 'alon@ronin.co.il' })
-      .where('name', 'alon')
+      .update({ email: 'name@mail.com' })
+      .where('name', 'name')
       .exec((err, result) => {
-        expect(result).toEqual({ email: 'alon@ronin.co.il' });
+        expect(result).toEqual({ email: 'name@mail.com' });
         done();
       })
     });
 
-    it('should create', () => {
+    it('should create returns mock', () => {
       mockingoose.User.toReturn({ _id: '1' }, 'save');
 
       return User
-      .create({ email: 'alon@ronin.co.il' })
+      .create({ email: 'name@mail.com' })
       .then(result => {
         expect(result).toEqual({ _id: '1' });
+      })
+    });
+
+    it('should create returns mongoose document', () => {
+      return User
+      .create({ name: 'name', email: 'name@mail.com' })
+      .then(result => {
+        expect(result.toObject()).toMatchObject({ name: 'name', email: 'name@mail.com' });
       })
     });
 
@@ -53,20 +63,47 @@ describe('mockingoose', () => {
       mockingoose.User.toReturn(new Error(), 'save');
 
       return User
-      .create({ email: 'alon@ronin.co.il' })
+      .create({ email: 'name@mail.com' })
       .catch(err => {
         expect(err).toBeInstanceOf(Error);
       })
     });
 
     it('should find with callback', (done) => {
-      const _doc = { name: 'alon' };
+      const _doc = { name: 'name' };
       mockingoose.User.toReturn(_doc);
 
       User.find({ _id: 1}, (err, doc) => {
         expect(err).toBeNull();
         expect(doc).toBe(_doc);
         done();
+      })
+    });
+
+    it('should reset a single mock', () => {
+      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.reset();
+
+      return User.find().then(doc => {
+        expect(doc).toBeUndefined()
+      })
+    });
+
+    it('should reset a single mock operation', () => {
+      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.reset('find');
+
+      return User.find().then(doc => {
+        expect(doc).toBeUndefined()
+      })
+    });
+
+    it('should fail to reset a single mock operation', () => {
+      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.reset('save');
+
+      return User.find().then(doc => {
+        expect(doc).toEqual({ test: 1 })
       })
     })
   });
@@ -151,7 +188,6 @@ describe('mockingoose', () => {
                 done();
               });
           }
-
         });
       })
     })
