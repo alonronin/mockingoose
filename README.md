@@ -88,7 +88,7 @@ beforeEach(() => {
 })
 ```
 
-### Operation available:
+### Operations available:
 
 - [x] `find` - for find query
 - [x] `findOne` - for findOne query
