@@ -112,6 +112,8 @@ validations are working as expected.
 
 the returned document is an instance of mongoose Model.
 
+`update` operation returns original mocked object.
+
 you can simulate Error by passing an Error to mockingoose:
 
 ```js
