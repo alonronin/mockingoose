@@ -23,7 +23,7 @@ const mockedReturn = function(cb) {
 
   if(!mock && op === 'save') { mock = this;}
 
-  if(mock instanceof Model === false) {
+  if(mock instanceof Model === false && op !== 'update') {
     mock = new Model(mock);
   }
 

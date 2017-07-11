@@ -30,13 +30,13 @@ describe('mockingoose', () => {
     });
 
     it('should update with exec and callback', (done) => {
-      mockingoose.User.toReturn({ email: 'name@mail.com' }, 'update');
+      mockingoose.User.toReturn({  ok: 1, nModified: 1, n: 1 }, 'update');
 
       User
       .update({ email: 'name@mail.com' })
       .where('name', 'name')
       .exec((err, result) => {
-        expect(result.toObject()).toMatchObject({ email: 'name@mail.com' });
+        expect(result).toEqual({  ok: 1, nModified: 1, n: 1 });
         done();
       })
     });
