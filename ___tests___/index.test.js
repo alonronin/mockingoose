@@ -105,6 +105,22 @@ describe('mockingoose', () => {
       return User.find().then(doc => {
         expect(doc.toObject()).toMatchObject({ name: 'name' })
       })
+    });
+
+    it('should be able to chain operations', () => {
+      mockingoose.User.toReturn({ name: 'name' }, 'findOne');
+      mockingoose.User.toReturn({ name: 'another name' }, 'save');
+
+      return User.findOne().then(user => {
+        expect(user.toObject()).toMatchObject({ name: 'name' });
+
+        user.name = 'another name';
+        user.email = 'name@email.com'; // or we will get Schema validation error
+
+        return user.save().then(user => {
+          expect(user.toObject()).toMatchObject({ name: 'another name' });
+        })
+      })
     })
   });
 
@@ -176,7 +192,7 @@ describe('mockingoose', () => {
             case 'findOneAndUpdate':
               User[op]({}, {}, {}, (err, doc) => {
                 expect(err).toBeNull();
-                expect(doc.toObject()).toMatchObject(mocked)
+                expect(doc.toObject()).toMatchObject(mocked);
                 done();
               });
 
@@ -184,7 +200,7 @@ describe('mockingoose', () => {
             default:
               User[op]((err, doc) => {
                 expect(err).toBeNull();
-                expect(doc.toObject()).toMatchObject(mocked)
+                expect(doc.toObject()).toMatchObject(mocked);
                 done();
               });
           }

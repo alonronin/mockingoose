@@ -101,6 +101,10 @@ const traps = {
 
     return {
       toReturn(o, op = 'find') {
+        if(target.__mocks.hasOwnProperty(prop)) {
+          return target.__mocks[prop][op] = o;
+        }
+
         target.__mocks[prop] = {
           [op]: o
         };
