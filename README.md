@@ -31,23 +31,23 @@ import model from './model';
 
 describe('test mongoose User model', () => {
   it('should return the doc with findById', () => {
-    const doc = {
+    const _doc = {
         _id: '507f191e810c19729de860ea',
         name: 'name',
         email: 'name@email.com'
     };
     
-    mockingoose.User.toReturn(doc); // operation `find` is default
+    mockingoose.User.toReturn(_doc); // operation `find` is default
     
     return model
     .findById({ _id: '507f191e810c19729de860ea'})
-    .then(_doc => {
-      expect(_doc).toEqual(doc);
+    .then(doc => {
+      expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc);
     })
   })
   
   it('should return the doc with update', () => {
-      const doc = {
+      const _doc = {
           _id: '507f191e810c19729de860ea',
           name: 'name',
           email: 'name@email.com'
@@ -58,8 +58,8 @@ describe('test mongoose User model', () => {
       return model
       .update({ name: 'changed' }) // this won't really change anything
       .where({ _id: '507f191e810c19729de860ea'})
-      .then(_doc => {
-        expect(_doc).toEqual(doc);
+      .then(doc => {
+        expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc);
       })
     })
 })
@@ -70,8 +70,8 @@ will reset Model mock, if pass an operation, will reset only this operation mock
 
 ```js
 it('should reset model mock', () => {
-  mockingoose.User.toReturn({ test: 1 });
-  mockingoose.User.toReturn({ test: 2 }, 'save');
+  mockingoose.User.toReturn({ name: '1' });
+  mockingoose.User.toReturn({ name: '2' }, 'save');
   
   mockingoose.User.reset(); // will reset all operations;
   mockingoose.User.reset('find'); // will reset only find operations;
@@ -109,6 +109,8 @@ if you are using `Model.create` and you don't pass a mock with mockingoose,
 you'll receive the mongoose created doc (with ObjectId and transformations)
 
 validations are working as expected.
+
+the returned document is an instance of mongoose Model.
 
 you can simulate Error by passing an Error to mockingoose:
 
