@@ -17,10 +17,15 @@ const ops = [
 
 const mockedReturn = function(cb) {
   const { op, model: { modelName }} = this;
+  const Model = mongoose.model(modelName);
 
   let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
 
   if(!mock && op === 'save') { mock = this;}
+
+  if(mock instanceof Model === false) {
+    mock = new Model(mock);
+  }
 
   let err = null;
 

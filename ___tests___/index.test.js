@@ -18,14 +18,14 @@ describe('mockingoose', () => {
     });
 
     it('should find', () => {
-      mockingoose.User.toReturn({ name: 2 });
+      mockingoose.User.toReturn({ name: "2" });
 
       return User
       .find()
       .where('name')
       .in([1])
       .then(result => {
-        expect(result).toEqual({ name: 2 });
+        expect(result.toObject()).toMatchObject({ name: "2" });
       })
     });
 
@@ -36,18 +36,18 @@ describe('mockingoose', () => {
       .update({ email: 'name@mail.com' })
       .where('name', 'name')
       .exec((err, result) => {
-        expect(result).toEqual({ email: 'name@mail.com' });
+        expect(result.toObject()).toMatchObject({ email: 'name@mail.com' });
         done();
       })
     });
 
     it('should create returns mock', () => {
-      mockingoose.User.toReturn({ _id: '1' }, 'save');
+      mockingoose.User.toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
 
       return User
       .create({ email: 'name@mail.com' })
       .then(result => {
-        expect(result).toEqual({ _id: '1' });
+        expect(JSON.parse(JSON.stringify(result))).toMatchObject({ _id: '507f191e810c19729de860ea' });
       })
     });
 
@@ -75,35 +75,35 @@ describe('mockingoose', () => {
 
       User.find({ _id: 1}, (err, doc) => {
         expect(err).toBeNull();
-        expect(doc).toBe(_doc);
+        expect(doc.toObject()).toMatchObject(_doc);
         done();
       })
     });
 
     it('should reset a single mock', () => {
-      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.toReturn({ name: 'name' });
       mockingoose.User.reset();
 
       return User.find().then(doc => {
-        expect(doc).toBeUndefined()
+        expect(doc.toObject()).not.toMatchObject({ name: 'name' })
       })
     });
 
     it('should reset a single mock operation', () => {
-      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.toReturn({ name: 'name' });
       mockingoose.User.reset('find');
 
       return User.find().then(doc => {
-        expect(doc).toBeUndefined()
+        expect(doc.toObject()).not.toMatchObject({ name: 'name' })
       })
     });
 
     it('should fail to reset a single mock operation', () => {
-      mockingoose.User.toReturn({ test: 1 });
+      mockingoose.User.toReturn({ name: 'name' });
       mockingoose.User.reset('save');
 
       return User.find().then(doc => {
-        expect(doc).toEqual({ test: 1 })
+        expect(doc.toObject()).toMatchObject({ name: 'name' })
       })
     })
   });
@@ -125,12 +125,12 @@ describe('mockingoose', () => {
       ops.forEach(op => {
         it(op, () => {
           const mocked = {
-            op
+            name: op
           };
 
           mockingoose.User.toReturn(mocked, op);
 
-          return User[op]().then(doc => expect(doc).toBe(mocked));
+          return User[op]().then(doc => expect(doc.toObject()).toMatchObject(mocked));
         });
       })
     });
@@ -139,14 +139,14 @@ describe('mockingoose', () => {
       ops.forEach(op => {
         it(op, (done) => {
           const mocked = {
-            op
+            name: op
           };
 
           mockingoose.User.toReturn(mocked, op);
 
           User[op]().exec((err, doc) => {
             expect(err).toBeNull();
-            expect(doc).toBe(mocked);
+            expect(doc.toObject()).toMatchObject(mocked)
             done();
           });
         });
@@ -157,7 +157,7 @@ describe('mockingoose', () => {
       ops.forEach(op => {
         it(op, (done) => {
           const mocked = {
-            op
+            name: op
           };
 
           mockingoose.User.toReturn(mocked, op);
@@ -168,7 +168,7 @@ describe('mockingoose', () => {
             case 'findOneAndRemove':
               User[op]({}, (err, doc) => {
                 expect(err).toBeNull();
-                expect(doc).toBe(mocked);
+                expect(doc.toObject()).toMatchObject(mocked);
                 done();
               });
 
@@ -176,7 +176,7 @@ describe('mockingoose', () => {
             case 'findOneAndUpdate':
               User[op]({}, {}, {}, (err, doc) => {
                 expect(err).toBeNull();
-                expect(doc).toBe(mocked);
+                expect(doc.toObject()).toMatchObject(mocked)
                 done();
               });
 
@@ -184,7 +184,7 @@ describe('mockingoose', () => {
             default:
               User[op]((err, doc) => {
                 expect(err).toBeNull();
-                expect(doc).toBe(mocked);
+                expect(doc.toObject()).toMatchObject(mocked)
                 done();
               });
           }
