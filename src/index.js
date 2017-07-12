@@ -101,20 +101,19 @@ const traps = {
 
     return {
       toReturn(o, op = 'find') {
-        if(target.__mocks.hasOwnProperty(prop)) {
-          return target.__mocks[prop][op] = o;
-        }
+        target.__mocks.hasOwnProperty(prop)
+            ? target.__mocks[prop][op] = o
+            : target.__mocks[prop] = { [op]: o };
 
-        target.__mocks[prop] = {
-          [op]: o
-        };
+        return this;
       },
 
       reset(op) {
-        if(op) return delete target.__mocks[prop][op];
-        delete target.__mocks[prop]
+        op && delete target.__mocks[prop][op] || delete target.__mocks[prop];
+
+        return this;
       }
-    }
+    };
   }
 };
 

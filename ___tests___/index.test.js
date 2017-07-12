@@ -108,8 +108,9 @@ describe('mockingoose', () => {
     });
 
     it('should be able to chain operations', () => {
-      mockingoose.User.toReturn({ name: 'name' }, 'findOne');
-      mockingoose.User.toReturn({ name: 'another name' }, 'save');
+      mockingoose.User
+        .toReturn({ name: 'name' }, 'findOne')
+        .toReturn({ name: 'another name' }, 'save');
 
       return User.findOne().then(user => {
         expect(user.toObject()).toMatchObject({ name: 'name' });

@@ -64,6 +64,7 @@ describe('test mongoose User model', () => {
     })
 })
 ```
+
 #### mockingoose#ModelName#reset(operation = undefined)
 
 will reset Model mock, if pass an operation, will reset only this operation mock.
@@ -76,6 +77,16 @@ it('should reset model mock', () => {
   mockingoose.User.reset(); // will reset all operations;
   mockingoose.User.reset('find'); // will reset only find operations;
 })
+```
+
+you can also chain `mockingoose#ModelName` operations:
+
+```js
+mockingoose.User
+        .toReturn({ name: 'name' })
+        .toReturn({ name: 'a name too' }, 'findOne')
+        .toReturn({ name: 'another name' }, 'save')
+        .reset('find');
 ```
 
 #### mockingoose#resetAll()
