@@ -92,7 +92,8 @@ jest.doMock('mongoose', () => mongoose);
 
 const target = {
   __mocks: {},
-  resetAll() { this.__mocks = {} }
+  resetAll() { this.__mocks = {} },
+  toJSON() { return this.__mocks }
 };
 
 const traps = {
@@ -112,6 +113,10 @@ const traps = {
         op && delete target.__mocks[prop][op] || delete target.__mocks[prop];
 
         return this;
+      },
+
+      toJSON() {
+        return target.__mocks[prop] || {};
       }
     };
   }

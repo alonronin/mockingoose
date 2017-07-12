@@ -122,6 +122,34 @@ describe('mockingoose', () => {
           expect(user.toObject()).toMatchObject({ name: 'another name' });
         })
       })
+    });
+
+    it('should return object with .toJSON()', () => {
+      mockingoose.User
+        .toReturn({ name: 'name' })
+        .toReturn({ name: 'a name too' }, 'findOne')
+        .toReturn({ name: 'another name' }, 'save');
+
+      const mocksString = '{"User":{"find":{"name":"name"},"findOne":{"name":"a name too"},"save":{"name":"another name"}}}';
+      const mockString = '{"find":{"name":"name"},"findOne":{"name":"a name too"},"save":{"name":"another name"}}';
+
+      const mocksObject = {
+        User: {
+          find: {
+            name: 'name'
+          },
+          findOne: {
+            name: 'a name too'
+          },
+          save: {
+            name: 'another name'
+          }
+        }
+      };
+
+      expect(JSON.stringify(mockingoose)).toBe(mocksString);
+      expect(JSON.stringify(mockingoose.User)).toBe(mockString);
+      expect(mockingoose.toJSON()).toEqual(mocksObject);
     })
   });
 
