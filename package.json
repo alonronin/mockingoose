@@ -1,6 +1,6 @@
 {
   "name": "mockingoose",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
   "scripts": {
