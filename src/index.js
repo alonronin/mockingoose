@@ -23,8 +23,8 @@ const mockedReturn = function(cb) {
 
   if(!mock && op === 'save') { mock = this;}
 
-  if(mock instanceof Model === false && op !== 'update') {
-    mock = new Model(mock);
+  if(mock instanceof Model === false && (op !== 'update')) {
+    mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
   }
 
   let err = null;

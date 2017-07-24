@@ -18,14 +18,17 @@ describe('mockingoose', () => {
     });
 
     it('should find', () => {
-      mockingoose.User.toReturn({ name: "2" });
+      mockingoose.User.toReturn([{ name: '2' }]);
 
       return User
       .find()
       .where('name')
       .in([1])
       .then(result => {
-        expect(result.toObject()).toMatchObject({ name: "2" });
+        expect(result).toHaveLength(1);
+        expect(result[0].toObject()).toHaveProperty('_id');
+        expect(result[0].toObject()).toHaveProperty('created');
+        expect(result[0].toObject()).toMatchObject({ name: '2'});
       })
     });
 
