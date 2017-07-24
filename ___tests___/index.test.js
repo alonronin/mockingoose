@@ -29,6 +29,16 @@ describe('mockingoose', () => {
         expect(result[0].toObject()).toHaveProperty('_id');
         expect(result[0].toObject()).toHaveProperty('created');
         expect(result[0].toObject()).toMatchObject({ name: '2'});
+        expect(result[0]).toBeInstanceOf(User);
+      })
+    });
+
+    it('should findById', () => {
+      const _doc = { name: 'name' };
+      mockingoose.User.toReturn(_doc, 'findOne');
+
+      return User.findById(1).then(doc => {
+        expect(doc.toObject()).toMatchObject(_doc);
       })
     });
 

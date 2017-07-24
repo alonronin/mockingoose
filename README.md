@@ -37,7 +37,7 @@ describe('test mongoose User model', () => {
         email: 'name@email.com'
     };
     
-    mockingoose.User.toReturn(_doc); // operation `find` is default
+    mockingoose.User.toReturn(_doc, 'findOne'); // findById is findOne
     
     return model
     .findById({ _id: '507f191e810c19729de860ea'})
