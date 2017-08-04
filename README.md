@@ -7,6 +7,15 @@
 $ npm i mockingoose -D
 ```
 
+## Import the library
+```js
+// using commonJS
+const mockingoose = require('mockingoose').default;
+
+// using es201x
+import mockingoose from 'mockingoose';
+```
+
 ## Usage
 ```js
 // user.js
