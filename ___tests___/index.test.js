@@ -33,6 +33,26 @@ describe('mockingoose', () => {
       })
     });
 
+    it('should not find', () => {
+      mockingoose.User.toReturn([]);
+
+      return User
+      .find()
+      .then(result => {
+        expect(result).toHaveLength(0);
+      })
+    });
+
+    it('should not findOne', () => {
+      mockingoose.User.toReturn(null);
+
+      return User
+      .findOne()
+      .then(result => {
+        expect(result).toBeFalsy();
+      })
+    });
+
     it('should findById', () => {
       const _doc = { name: 'name' };
       mockingoose.User.toReturn(_doc, 'findOne');
@@ -98,7 +118,7 @@ describe('mockingoose', () => {
       mockingoose.User.reset();
 
       return User.find().then(doc => {
-        expect(doc.toObject()).not.toMatchObject({ name: 'name' })
+        expect(doc).toBeFalsy()
       })
     });
 
@@ -107,7 +127,7 @@ describe('mockingoose', () => {
       mockingoose.User.reset('find');
 
       return User.find().then(doc => {
-        expect(doc.toObject()).not.toMatchObject({ name: 'name' })
+        expect(doc).toBeFalsy()
       })
     });
 
