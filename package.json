@@ -24,17 +24,20 @@
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.6.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "jest": "^20.0.4"
   },
   "peerDependencies": {
-    "mongoose": "^4.11.1"
+    "mongoose": "^4.13.9"
   },
   "jest": {
     "testEnvironment": "node"
   },
   "engines": {
     "node": ">=6.4.0"
+  },
+  "dependencies": {
+    "mongoose": "^4.13.9"
   }
 }
