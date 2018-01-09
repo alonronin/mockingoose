@@ -8,49 +8,49 @@ describe('mockingoose', () => {
     it('should validate', () => {
       const user = new User({
         name: 'user',
-        email: 'user@email.com'
+        email: 'user@email.com',
       });
 
       return user.validate().then(() => {
         expect(user.toObject()).toHaveProperty('created');
-        expect(user.toObject()).toHaveProperty('_id')
-      })
+        expect(user.toObject()).toHaveProperty('_id');
+      });
     });
 
     it('should find', () => {
       mockingoose.User.toReturn([{ name: '2' }]);
 
       return User
-      .find()
-      .where('name')
-      .in([1])
-      .then(result => {
-        expect(result).toHaveLength(1);
-        expect(result[0].toObject()).toHaveProperty('_id');
-        expect(result[0].toObject()).toHaveProperty('created');
-        expect(result[0].toObject()).toMatchObject({ name: '2'});
-        expect(result[0]).toBeInstanceOf(User);
-      })
+        .find()
+        .where('name')
+        .in([1])
+        .then(result => {
+          expect(result).toHaveLength(1);
+          expect(result[0].toObject()).toHaveProperty('_id');
+          expect(result[0].toObject()).toHaveProperty('created');
+          expect(result[0].toObject()).toMatchObject({ name: '2' });
+          expect(result[0]).toBeInstanceOf(User);
+        });
     });
 
     it('should not find', () => {
       mockingoose.User.toReturn([]);
 
       return User
-      .find()
-      .then(result => {
-        expect(result).toHaveLength(0);
-      })
+        .find()
+        .then(result => {
+          expect(result).toHaveLength(0);
+        });
     });
 
     it('should not findOne', () => {
       mockingoose.User.toReturn(null);
 
       return User
-      .findOne()
-      .then(result => {
-        expect(result).toBeFalsy();
-      })
+        .findOne()
+        .then(result => {
+          expect(result).toBeFalsy();
+        });
     });
 
     it('should findById', () => {
@@ -59,58 +59,79 @@ describe('mockingoose', () => {
 
       return User.findById(1).then(doc => {
         expect(doc.toObject()).toMatchObject(_doc);
-      })
+      });
+    });
+
+    it('should count', () => {
+      const count = 2;
+      mockingoose.User.toReturn(count, 'count');
+
+      return User.count().then(result => {
+        expect(result).toBe(count);
+      });
+    });
+
+    it('should count exec and cb', (done) => {
+      const count = 2;
+      mockingoose.User.toReturn(count, 'count');
+
+      User
+        .count()
+        .exec((err, result) => {
+          expect(result).toBe(count);
+          done();
+        });
     });
 
     it('should update with exec and callback', (done) => {
-      mockingoose.User.toReturn({  ok: 1, nModified: 1, n: 1 }, 'update');
+      mockingoose.User.toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
 
       User
-      .update({ email: 'name@mail.com' })
-      .where('name', 'name')
-      .exec((err, result) => {
-        expect(result).toEqual({  ok: 1, nModified: 1, n: 1 });
-        done();
-      })
+        .update({ email: 'name@mail.com' })
+        .where('name', 'name')
+        .exec((err, result) => {
+          expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
+          done();
+        });
     });
 
     it('should create returns mock', () => {
       mockingoose.User.toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
 
       return User
-      .create({ email: 'name@mail.com' })
-      .then(result => {
-        expect(JSON.parse(JSON.stringify(result))).toMatchObject({ _id: '507f191e810c19729de860ea' });
-      })
+        .create({ email: 'name@mail.com' })
+        .then(result => {
+          expect(JSON.parse(JSON.stringify(result))).toMatchObject({ _id: '507f191e810c19729de860ea' });
+        });
     });
 
     it('should create returns mongoose document', () => {
       return User
-      .create({ name: 'name', email: 'name@mail.com' })
-      .then(result => {
-        expect(result.toObject()).toMatchObject({ name: 'name', email: 'name@mail.com' });
-      })
+        .create({ name: 'name', email: 'name@mail.com' })
+        .then(result => {
+          expect(result.toObject()).toMatchObject({ name: 'name', email: 'name@mail.com' });
+        });
     });
 
     it('should return error', () => {
       mockingoose.User.toReturn(new Error(), 'save');
 
       return User
-      .create({ email: 'name@mail.com' })
-      .catch(err => {
-        expect(err).toBeInstanceOf(Error);
-      })
+        .create({ email: 'name@mail.com' })
+        .catch(err => {
+          expect(err).toBeInstanceOf(Error);
+        });
     });
 
     it('should find with callback', (done) => {
       const _doc = { name: 'name' };
       mockingoose.User.toReturn(_doc);
 
-      User.find({ _id: 1}, (err, doc) => {
+      User.find({ _id: 1 }, (err, doc) => {
         expect(err).toBeNull();
         expect(doc.toObject()).toMatchObject(_doc);
         done();
-      })
+      });
     });
 
     it('should reset a single mock', () => {
@@ -118,8 +139,8 @@ describe('mockingoose', () => {
       mockingoose.User.reset();
 
       return User.find().then(doc => {
-        expect(doc).toBeFalsy()
-      })
+        expect(doc).toBeFalsy();
+      });
     });
 
     it('should reset a single mock operation', () => {
@@ -127,8 +148,8 @@ describe('mockingoose', () => {
       mockingoose.User.reset('find');
 
       return User.find().then(doc => {
-        expect(doc).toBeFalsy()
-      })
+        expect(doc).toBeFalsy();
+      });
     });
 
     it('should fail to reset a single mock operation', () => {
@@ -136,8 +157,8 @@ describe('mockingoose', () => {
       mockingoose.User.reset('save');
 
       return User.find().then(doc => {
-        expect(doc.toObject()).toMatchObject({ name: 'name' })
-      })
+        expect(doc.toObject()).toMatchObject({ name: 'name' });
+      });
     });
 
     it('should be able to chain operations', () => {
@@ -153,8 +174,8 @@ describe('mockingoose', () => {
 
         return user.save().then(user => {
           expect(user.toObject()).toMatchObject({ name: 'another name' });
-        })
-      })
+        });
+      });
     });
 
     it('should return object with .toJSON()', () => {
@@ -169,78 +190,77 @@ describe('mockingoose', () => {
       const mocksObject = {
         User: {
           find: {
-            name: 'name'
+            name: 'name',
           },
           findOne: {
-            name: 'a name too'
+            name: 'a name too',
           },
           save: {
-            name: 'another name'
-          }
-        }
+            name: 'another name',
+          },
+        },
       };
 
       expect(JSON.stringify(mockingoose)).toBe(mocksString);
       expect(JSON.stringify(mockingoose.User)).toBe(mockString);
       expect(mockingoose.toJSON()).toEqual(mocksObject);
-    })
+    });
   });
 
   describe('check all operations', () => {
     const ops = [
       'find',
       'findOne',
-      'count',
       'distinct',
       'findOneAndUpdate',
       'findOneAndRemove',
       'remove',
       'deleteOne',
-      'deleteMany'
+      'deleteMany',
     ];
 
     describe('with promise', () => {
       ops.forEach(op => {
         it(op, () => {
           const mocked = {
-            name: op
+            name: op,
           };
 
           mockingoose.User.toReturn(mocked, op);
 
           return User[op]().then(doc => expect(doc.toObject()).toMatchObject(mocked));
         });
-      })
+      });
     });
 
     describe('with exec and callback', () => {
       ops.forEach(op => {
         it(op, (done) => {
           const mocked = {
-            name: op
+            name: op,
           };
 
           mockingoose.User.toReturn(mocked, op);
 
           User[op]().exec((err, doc) => {
             expect(err).toBeNull();
-            expect(doc.toObject()).toMatchObject(mocked)
+            expect(doc.toObject()).toMatchObject(mocked);
             done();
           });
         });
-      })
+      });
     });
 
     describe('with callback', () => {
       ops.forEach(op => {
         it(op, (done) => {
           const mocked = {
-            name: op
+            name: op,
           };
 
           mockingoose.User.toReturn(mocked, op);
 
-          switch(op) {
+          switch (op) {
             case 'distinct':
             case 'findOne':
             case 'findOneAndRemove':
@@ -267,8 +287,8 @@ describe('mockingoose', () => {
               });
           }
         });
-      })
-    })
+      });
+    });
   });
 });
 
