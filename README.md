@@ -137,12 +137,12 @@ the returned document is an instance of mongoose Model.
 you can simulate Error by passing an Error to mockingoose:
 
 ```js
-mockingoose.User.toReturn(new Error(), 'save');
+mockingoose.User.toReturn(new Error('My Error'), 'save');
 
 return User
-    .create({ email: 'name@email.com' })
+    .create({ name: 'name', email: 'name@email.com' })
     .catch(err => {
-      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('My Error');
     })
 ```
 
