@@ -114,13 +114,13 @@ describe('mockingoose', () => {
     });
 
     it('should return error', () => {
-      mockingoose.User.toReturn(new Error(), 'save');
+      mockingoose.User.toReturn(new Error('My Error'), 'save');
 
       return User
-        .create({ email: 'name@mail.com' })
+        .create({ name: 'name', email: 'name@mail.com' })
         .catch(err => {
-          expect(err).toBeInstanceOf(Error);
-        });
+          expect(err.message).toBe('My Error')
+        })
     });
 
     it('should find with callback', (done) => {

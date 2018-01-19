@@ -21,15 +21,15 @@ const mockedReturn = function(cb) {
 
   let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
 
+  let err = null;
+
+  if(mock instanceof Error) err = mock;
+
   if(!mock && op === 'save') { mock = this;}
 
   if(mock && mock instanceof Model === false && (!['update', 'count'].includes(op))) {
     mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
   }
-
-  let err = null;
-
-  if(mock instanceof Error) err = mock;
 
   if(cb) return cb(err, mock);
 
