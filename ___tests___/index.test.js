@@ -18,6 +18,17 @@ describe('mockingoose', () => {
       });
     });
 
+    it('should lean', () => {
+      mockingoose.User.toReturn([{ name: '2' }]);
+
+      return User
+        .find()
+        .lean()
+        .then(result => {
+          expect(result[0]).toMatchObject({ name: '2' });
+        });
+    });
+
     it('should find', () => {
       mockingoose.User.toReturn([{ name: '2' }]);
 
