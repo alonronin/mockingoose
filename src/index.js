@@ -9,6 +9,7 @@ mongoose.createConnection = jest
     once: jest.fn(),
     then(resolve) { return Promise.resolve(resolve(this)); },
     catch() {},
+    model: mongoose.model,
   });
 
 const ops = [
@@ -20,30 +21,30 @@ const ops = [
   'findOneAndRemove',
   'remove',
   'deleteOne',
-  'deleteMany'
+  'deleteMany',
 ];
 
-const mockedReturn = function(cb) {
-  const { op, model: { modelName }} = this;
+const mockedReturn = function (cb) {
+  const { op, model: { modelName } } = this;
   const Model = mongoose.model(modelName);
 
   let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
 
   let err = null;
 
-  if(mock instanceof Error) err = mock;
+  if (mock instanceof Error) err = mock;
 
-  if(!mock && op === 'save') { mock = this;}
+  if (!mock && op === 'save') { mock = this;}
 
-  if(mock && mock instanceof Model === false && (!['update', 'count'].includes(op))) {
+  if (mock && mock instanceof Model === false && (!['update', 'count'].includes(op))) {
     mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
   }
 
-  if(cb) return cb(err, mock);
+  if (cb) return cb(err, mock);
 
-  if(err) return Promise.reject(err);
+  if (err) return Promise.reject(err);
 
-  return Promise.resolve(mock)
+  return Promise.resolve(mock);
 };
 
 ops.forEach(op => {
@@ -75,23 +76,23 @@ ops.forEach(op => {
 
     this.op = op;
 
-    if(!callback) return this;
+    if (!callback) return this;
 
     return this.exec.call(this, callback);
-  })
+  });
 });
 
 mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
 });
 
-mongoose.Model.prototype.save = function(options, cb) {
+mongoose.Model.prototype.save = function (options, cb) {
   const op = 'save';
   const { modelName } = this.constructor;
 
-  if(typeof options === 'function') cb = options;
+  if (typeof options === 'function') cb = options;
 
-  Object.assign(this, { op, model: { modelName }});
+  Object.assign(this, { op, model: { modelName } });
 
   return mockedReturn.call(this, cb);
 };
@@ -100,19 +101,19 @@ jest.doMock('mongoose', () => mongoose);
 
 const target = {
   __mocks: {},
-  resetAll() { this.__mocks = {} },
-  toJSON() { return this.__mocks }
+  resetAll() { this.__mocks = {}; },
+  toJSON() { return this.__mocks; },
 };
 
 const traps = {
   get(target, prop) {
-    if(target.hasOwnProperty(prop)) return Reflect.get(target, prop);
+    if (target.hasOwnProperty(prop)) return Reflect.get(target, prop);
 
     return {
       toReturn(o, op = 'find') {
         target.__mocks.hasOwnProperty(prop)
-            ? target.__mocks[prop][op] = o
-            : target.__mocks[prop] = { [op]: o };
+          ? target.__mocks[prop][op] = o
+          : target.__mocks[prop] = { [op]: o };
 
         return this;
       },
@@ -125,9 +126,9 @@ const traps = {
 
       toJSON() {
         return target.__mocks[prop] || {};
-      }
+      },
     };
-  }
+  },
 };
 
 const mockingoose = new Proxy(target, traps);

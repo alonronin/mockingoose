@@ -313,8 +313,10 @@ describe('mockingoose', () => {
       conn.on('error', console.error);
 
       conn.then((result) => {
-        expect(result).toBe(conn)
-      })
+        expect(result).toBe(conn);
+      });
+
+      expect(conn.model).toBe(mongoose.model);
 
     })
   })
