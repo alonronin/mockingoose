@@ -1,8 +1,15 @@
 import mongoose from 'mongoose';
 
 mongoose.Promise = Promise;
-mongoose.connect = jest.fn(() => Promise.resolve());
-mongoose.createConnection = jest.fn(() => Promise.resolve());
+mongoose.connect = jest.fn().mockImplementation(() => Promise.resolve());
+mongoose.createConnection = jest
+  .fn()
+  .mockReturnValue({
+    on: jest.fn(),
+    once: jest.fn(),
+    then(resolve) { return Promise.resolve(resolve(this)); },
+    catch() {},
+  });
 
 const ops = [
   'find',

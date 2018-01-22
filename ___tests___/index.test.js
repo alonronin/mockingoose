@@ -299,10 +299,23 @@ describe('mockingoose', () => {
       })
     });
 
-    it('should mock mongoose.createConnection', () => {
-      return mongoose.createConnection().then(() => {
+    it('should mock mongoose.createConnection', (done) => {
+      mongoose.createConnection().then(() => {
         expect(mongoose.createConnection).toBeCalled();
+        done();
       })
+    });
+
+    it('createConnection with callback', () => {
+      const conn = mongoose.createConnection('mongodb://localhost/test');
+
+      conn.once('open', console.log);
+      conn.on('error', console.error);
+
+      conn.then((result) => {
+        expect(result).toBe(conn)
+      })
+
     })
   })
 });
