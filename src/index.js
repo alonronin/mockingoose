@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 mongoose.Promise = Promise;
 mongoose.connect = jest.fn(() => Promise.resolve());
-mongoose.createConnction = jest.fn(() => Promise.resolve());
+mongoose.createConnection = jest.fn(() => Promise.resolve());
 
 const ops = [
   'find',

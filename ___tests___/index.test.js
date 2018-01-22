@@ -1,4 +1,5 @@
 import mockingoose from '../src/index';
+import mongoose from 'mongoose';
 import User from './User';
 
 describe('mockingoose', () => {
@@ -290,5 +291,19 @@ describe('mockingoose', () => {
       });
     });
   });
+
+  describe('mongoose connections', () => {
+    it('should mock mongoose.connect', () => {
+      return mongoose.connect().then(() => {
+        expect(mongoose.connect).toBeCalled();
+      })
+    });
+
+    it('should mock mongoose.createConnection', () => {
+      return mongoose.createConnection().then(() => {
+        expect(mongoose.createConnection).toBeCalled();
+      })
+    })
+  })
 });
 
