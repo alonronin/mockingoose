@@ -326,9 +326,22 @@ describe('mockingoose', () => {
       conn.then((result) => {
         expect(result).toBe(conn);
       });
+    });
 
-      expect(conn.model).toBe(mongoose.model);
+    it('register models on createConnection instance', (done) => {
+      mockingoose.Model.toReturn({ name: 'test' }, 'save');
+      const conn = mongoose.createConnection('mongodb://localhost/test');
 
+      const schema = mongoose.Schema({
+        name: String
+      });
+
+      const Model = conn.model('Model', schema);
+
+      Model.create({ name: 'test' }).then((result) => {
+        expect(result.toObject()).toMatchObject({ name: 'test' });
+        done();
+      });
     })
   })
 });

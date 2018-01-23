@@ -9,7 +9,7 @@ mongoose.createConnection = jest
     once: jest.fn(),
     then(resolve) { return Promise.resolve(resolve(this)); },
     catch() {},
-    model: mongoose.model,
+    model: mongoose.model.bind(mongoose),
   });
 
 const ops = [
@@ -25,7 +25,7 @@ const ops = [
 ];
 
 const mockedReturn = function (cb) {
-  const { op, model: { modelName }, _mongooseOptions: { lean } } = this;
+  const { op, model: { modelName }, _mongooseOptions = {} } = this;
   const Model = mongoose.model(modelName);
 
   let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
@@ -39,7 +39,7 @@ const mockedReturn = function (cb) {
   if (mock && mock instanceof Model === false && (!['update', 'count'].includes(op))) {
     mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
 
-    if(lean) mock = Array.isArray(mock) ? mock.map(item => item.toObject()) : mock.toObject();
+    if (_mongooseOptions.lean) mock = Array.isArray(mock) ? mock.map(item => item.toObject()) : mock.toObject();
   }
 
   if (cb) return cb(err, mock);
