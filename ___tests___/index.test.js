@@ -229,7 +229,7 @@ describe('mockingoose', () => {
     ]
 
     instanceMethods.forEach(op => {
-      it(`${op} resolves it's promise correctly`, () => {
+      it(`${op} resolves its promise correctly`, () => {
         const mocked = {
           name: op,
           email: 'name@email.com'
