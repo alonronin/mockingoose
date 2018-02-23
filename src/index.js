@@ -88,7 +88,7 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
 });
 
-mongoose.Model.prototype.save = function (options, cb) {
+mongoose.Model.prototype.save = jest.fn().mockImplementation(function (options, cb) {
   const op = 'save';
   const { modelName } = this.constructor;
 
@@ -97,7 +97,7 @@ mongoose.Model.prototype.save = function (options, cb) {
   Object.assign(this, { op, model: { modelName } });
 
   return mockedReturn.call(this, cb);
-};
+});
 
 jest.doMock('mongoose', () => mongoose);
 

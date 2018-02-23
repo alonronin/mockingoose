@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 import User from './User';
 
 describe('mockingoose', () => {
-  beforeEach(() => mockingoose.resetAll());
+  beforeEach(() => {
+    mockingoose.resetAll();
+    jest.clearAllMocks();
+  });
 
   describe('explicit tests', () => {
     it('should validate', () => {
@@ -56,7 +59,7 @@ describe('mockingoose', () => {
     });
 
     it('should not findOne', () => {
-      mockingoose.User.toReturn(null);
+      mockingoose.User.toReturn(null, 'findOne');
 
       return User
         .findOne()
