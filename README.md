@@ -152,4 +152,9 @@ will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
 
 check tests for more, feel free to fork and contribute.
 
+### TODO:
+
+- [ ] Adding `count` mock on the Model.
+- [ ] Returen `Jest.fn` for `Model.save` mock;
+
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
