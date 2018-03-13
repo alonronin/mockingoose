@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-mongoose.Promise = Promise;
+if(!/^5/.test(mongoose.version)) mongoose.Promise = Promise;
+
 mongoose.connect = jest.fn().mockImplementation(() => Promise.resolve());
 mongoose.createConnection = jest
   .fn()

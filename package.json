@@ -29,15 +29,12 @@
     "jest": "^20.0.4"
   },
   "peerDependencies": {
-    "mongoose": "^4.13.9"
+    "mongoose": ">=4.9.10"
   },
   "jest": {
     "testEnvironment": "node"
   },
   "engines": {
     "node": ">=6.4.0"
-  },
-  "dependencies": {
-    "mongoose": "^4.13.9"
   }
 }

@@ -2,3 +2,5 @@
 /___tests___
 /src
 .babelrc
+package-lock.json
+.npmrc
