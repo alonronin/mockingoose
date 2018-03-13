@@ -154,6 +154,7 @@ check tests for more, feel free to fork and contribute.
 
 ### TODO:
 
-- [x] Return `Jest.fn` for `Model.save` mock;
+- [x] Return `Jest.fn` for `Model.save` mock
+- [ ] Support `Model.aggregate`
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
