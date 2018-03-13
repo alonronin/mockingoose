@@ -25,11 +25,6 @@ const ops = [
   'deleteMany',
 ];
 
-const instanceMethods = [
-  'remove',
-  'save'
-]
-
 const mockedReturn = function (cb) {
   const { op, model: { modelName }, _mongooseOptions = {} } = this;
   const Model = mongoose.model(modelName);
@@ -94,7 +89,12 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
 });
 
-instanceMethods.forEach(methodName => {
+const instance = [
+  'remove',
+  'save'
+];
+
+instance.forEach(methodName => {
   mongoose.Model.prototype[methodName] = jest.fn().mockImplementation(function (options, cb) {
     const op = methodName;
     const { modelName } = this.constructor;
@@ -105,7 +105,7 @@ instanceMethods.forEach(methodName => {
 
     return mockedReturn.call(this, cb);
   })
-})
+});
 
 jest.doMock('mongoose', () => mongoose);
 
