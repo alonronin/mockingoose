@@ -222,6 +222,32 @@ describe('mockingoose', () => {
     });
   });
 
+  describe('check all instance methods', () => {
+    const instanceMethods = [
+      'save',
+      'remove'
+    ]
+
+    instanceMethods.forEach(op => {
+      it(`${op} resolves its promise correctly`, () => {
+        const mocked = {
+          name: op,
+          email: 'name@email.com'
+        };
+
+        mockingoose.User.toReturn(mocked, 'findOne')
+          .toReturn(mocked, op);
+
+        return User.findOne().then(user => {
+          return user[op]()
+        })
+        .then(user => {
+          expect(user).toBeTruthy()
+        })
+      });
+    })
+  })
+
   describe('check all operations', () => {
     const ops = [
       'find',
