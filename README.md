@@ -36,7 +36,7 @@ export default mongoose.model('User', schema);
 ```js
 // __tests__/user.test.js
 import mockingoose from 'mockingoose';
-import model from './model';
+import model from './user';
 
 describe('test mongoose User model', () => {
   it('should return the doc with findById', () => {
