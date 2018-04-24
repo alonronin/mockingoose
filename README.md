@@ -51,7 +51,7 @@ describe('test mongoose User model', () => {
     return model
     .findById({ _id: '507f191e810c19729de860ea'})
     .then(doc => {
-      expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc);
+      expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc));
     })
   })
   
@@ -68,7 +68,7 @@ describe('test mongoose User model', () => {
       .update({ name: 'changed' }) // this won't really change anything
       .where({ _id: '507f191e810c19729de860ea'})
       .then(doc => {
-        expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc);
+        expect(JSON.parse(JSON.stringify(doc)).toMatchObject(_doc));
       })
     })
 })
