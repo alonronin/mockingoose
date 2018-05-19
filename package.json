@@ -25,8 +25,8 @@
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "jest": "^20.0.4"
+    "babel-preset-env": "^1.7.0",
+    "jest": "^22.4.3"
   },
   "peerDependencies": {
     "mongoose": ">=4.9.10"
