@@ -21,6 +21,7 @@ const ops = [
   'findOneAndUpdate',
   'findOneAndRemove',
   'remove',
+  'update',
   'deleteOne',
   'deleteMany',
 ];
@@ -53,6 +54,7 @@ const mockedReturn = function (cb) {
 ops.forEach(op => {
   mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (criteria, doc, options, callback) {
     switch (arguments.length) {
+      case 4:
       case 3:
         if (typeof options === 'function') {
           callback = options;
