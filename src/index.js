@@ -21,6 +21,7 @@ const ops = [
   'findOneAndUpdate',
   'findOneAndRemove',
   'remove',
+  'update',
   'deleteOne',
   'deleteMany',
 ];
@@ -53,6 +54,7 @@ const mockedReturn = function (cb) {
 ops.forEach(op => {
   mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (criteria, doc, options, callback) {
     switch (arguments.length) {
+      case 4:
       case 3:
         if (typeof options === 'function') {
           callback = options;
@@ -87,6 +89,22 @@ ops.forEach(op => {
 
 mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
+});
+
+mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
+	const { _model: { modelName } } = this;
+
+	let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
+
+	let err = null;
+
+	if (mock instanceof Error) err = mock;
+
+	if (cb) return cb(err, mock);
+
+	if (err) return Promise.reject(err);
+
+	return Promise.resolve(mock);
 });
 
 const instance = [
