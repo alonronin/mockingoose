@@ -120,6 +120,62 @@ describe('mockingoose', () => {
 				});
 		});
 
+		it('should aggregate with callback', (done) => {
+			mockingoose.User.toReturn([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }], 'aggregate');
+
+			User
+				.aggregate(
+					[{
+						'$group': {
+							'_id': {
+								'accountId': '$accountId'
+							}
+						}
+					}],
+					(err, result) => {
+						expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
+						done();
+					}
+				);
+		});
+
+		it('should aggregate with exec snd callback', (done) => {
+			mockingoose.User.toReturn([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }], 'aggregate');
+
+			User
+				.aggregate(
+					[{
+						'$group': {
+							'_id': {
+								'accountId': '$accountId'
+							}
+						}
+					}]
+				).exec(
+				(err, result) => {
+					expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
+					done();
+				}
+			);
+		});
+
+		it('should aggregate with promise', () => {
+			mockingoose.User.toReturn([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }], 'aggregate');
+
+			return User
+				.aggregate(
+					[{
+						'$group': {
+							'_id': {
+								'accountId': '$accountId'
+							}
+						}
+					}])
+				.then(result => {
+					expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
+				});
+		});
+
 		it('should create returns mock', () => {
 			mockingoose.User.toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
 
