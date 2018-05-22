@@ -121,6 +121,7 @@ beforeEach(() => {
 - [x] `remove` - for remove query
 - [x] `deleteOne` - for deleteOne query
 - [x] `deleteMany` - for deleteMany query
+- [x] `aggregate` - for aggregate framework
 
 ### Notes
 All operations works with `exec`, `promise` and `callback`.  
@@ -155,6 +156,6 @@ check tests for more, feel free to fork and contribute.
 ### TODO:
 
 - [x] Return `Jest.fn` for `Model.save` mock
-- [ ] Support `Model.aggregate`
+- [x] Support `Model.aggregate`
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
