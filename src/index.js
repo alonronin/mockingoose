@@ -38,7 +38,7 @@ const mockedReturn = function (cb) {
 
   if (!mock && op === 'save') { mock = this;}
 
-  if (mock && mock instanceof Model === false && (!['update', 'count'].includes(op))) {
+  if (mock && mock instanceof Model === false && (!['update', 'count', 'distinct'].includes(op))) {
     mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
 
     if (_mongooseOptions.lean) mock = Array.isArray(mock) ? mock.map(item => item.toObject()) : mock.toObject();

@@ -1,4 +1,4 @@
-import mockingoose from '../src/index';
+import mockingoose from '../src';
 import mongoose from 'mongoose';
 import User from './User';
 
@@ -175,6 +175,14 @@ describe('mockingoose', () => {
 					expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
 				});
 		});
+
+    it('should return distinct values', () => {
+      mockingoose.User.toReturn(['admin', 'john.doe'], 'distinct');
+      return User.distinct('user')
+        .then(result => {
+          expect(result).toMatchObject(['admin', 'john.doe'])
+        });
+    });
 
 		it('should create returns mock', () => {
 			mockingoose.User.toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
@@ -454,4 +462,3 @@ describe('mockingoose', () => {
 		});
 	});
 });
-
