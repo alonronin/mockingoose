@@ -1,8 +1,7 @@
-# Mockingoose
+# Mockingoose [![CircleCI](https://circleci.com/gh/alonronin/mockingoose/tree/master.svg?style=svg)](https://circleci.com/gh/alonronin/mockingoose/tree/master)
+
 ![logo]
 > A Jest package for mocking mongoose models
-
-[![CircleCI](https://circleci.com/gh/alonronin/mockingoose/tree/master.svg?style=svg)](https://circleci.com/gh/alonronin/mockingoose/tree/master)
 
 ## Installation
 ```bash
