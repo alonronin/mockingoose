@@ -13,8 +13,8 @@ jobs:
         keys:
         - npm-cache-{{ checksum "package.json" }}
 
-    - run: npm install mongoose --no-save
     - run: npm install
+    - run: npm install mongoose --no-save
     - run: npm test
 
     - save_cache:
