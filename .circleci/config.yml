@@ -13,7 +13,7 @@ jobs:
         keys:
         - npm-cache-{{ checksum "package.json" }}
 
-    - run: npm install
+    - run: npm install mongosoe --no-save && npm install
 
     - save_cache:
         paths:
