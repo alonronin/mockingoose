@@ -113,7 +113,9 @@ beforeEach(() => {
 
 - [x] `find` - for find query
 - [x] `findOne` - for findOne query
-- [x] `count` - for count query
+- [x] `count` - for count query (deprecated)
+- [x] `countDocuments` for count query
+- [x] `estimatedDocumentCount` for count collection documents
 - [x] `distinct` - for distinct query
 - [x] `findOneAndUpdate` - for findOneAndUpdate query
 - [x] `findOneAndRemove` - for findOneAndRemove query
