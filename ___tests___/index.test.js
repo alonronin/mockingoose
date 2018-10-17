@@ -95,6 +95,15 @@ describe('mockingoose', () => {
 			});
 		});
 
+		it('should estimatedDocumentCount', () => {
+			const count = 2;
+			mockingoose.User.toReturn(count, 'estimatedDocumentCount');
+
+			return User.estimatedDocumentCount().then(result => {
+				expect(result).toBe(count);
+			});
+		});
+
 		it('should count exec and cb', (done) => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'count');
@@ -113,6 +122,18 @@ describe('mockingoose', () => {
 
 			User
 				.countDocuments()
+				.exec((err, result) => {
+					expect(result).toBe(count);
+					done();
+				});
+		});
+
+		it('should estimatedDocumentCount exec and cb', (done) => {
+			const count = 2;
+			mockingoose.User.toReturn(count, 'estimatedDocumentCount');
+
+			User
+				.estimatedDocumentCount()
 				.exec((err, result) => {
 					expect(result).toBe(count);
 					done();
