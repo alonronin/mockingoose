@@ -123,8 +123,43 @@ instance.forEach(methodName => {
 
     Object.assign(this, { op, model: { modelName } });
 
-    return mockedReturn.call(this, cb);
-  })
+    const hooks = this.constructor.hooks
+
+    return new Promise((resolve, reject) => {
+      hooks.execPre(op, this, [cb], (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        const ret = mockedReturn.call(this, cb);
+
+        if (cb) {
+          hooks.execPost(op, this, [ret], (err) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+
+            resolve(ret);
+          });
+        } else {
+          ret
+            .then((ret) => {
+              hooks.execPost(op, this, [ret], (err) => {
+                if (err) {
+                  reject(err);
+                  return;
+                }
+
+                resolve(ret);
+              });
+            })
+            .catch(reject);
+        }
+      });
+    });
+  });
 });
 
 jest.doMock('mongoose', () => mongoose);

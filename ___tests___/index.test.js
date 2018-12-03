@@ -354,6 +354,23 @@ describe('mockingoose', () => {
 					});
 			});
 		});
+
+		it(`save calls its hook correctly`, () => {
+			const mocked = {
+				name: 'save',
+				email: 'name@email.com'
+			};
+
+			mockingoose.User.toReturn(null, 'save');
+
+			User.create(mocked).then(user => {
+				expect(user.saveCount).toBe(1);
+				user.name = 'save2';
+				user.save((err, user) => {
+					expect(user.saveCount).toBe(2);
+				})
+			});
+		});
 	});
 
 	describe('check all operations', () => {
@@ -496,4 +513,3 @@ describe('mockingoose', () => {
 		});
 	});
 });
-
