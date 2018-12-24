@@ -1,4 +1,5 @@
 /.idea
+/.circleci
 /___tests___
 /src
 .babelrc
