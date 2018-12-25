@@ -174,6 +174,9 @@ const traps = {
   get(target, prop) {
     if (target.hasOwnProperty(prop)) return Reflect.get(target, prop);
 
+    // Check if model (prop) is registered with mongoose.
+    mongoose.model(prop);
+
     return {
       toReturn(o, op = 'find') {
         target.__mocks.hasOwnProperty(prop)

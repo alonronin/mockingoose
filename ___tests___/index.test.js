@@ -328,6 +328,14 @@ describe('mockingoose', () => {
 			expect(JSON.stringify(mockingoose.User)).toBe(mockString);
 			expect(mockingoose.toJSON()).toEqual(mocksObject);
 		});
+
+		it('should throw an error if model does not exists', () => {
+			mockingoose.None.toReturn([{ not: 'exitsts' }]);
+
+			return User.find().then(users => {
+				expect(users).toHaveLength(1);
+			});
+		})
 	});
 
 	describe('check all instance methods', () => {
