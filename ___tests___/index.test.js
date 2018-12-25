@@ -330,11 +330,12 @@ describe('mockingoose', () => {
 		});
 
 		it('should throw an error if model does not exists', () => {
-			mockingoose.None.toReturn([{ not: 'exitsts' }]);
 
-			return User.find().then(users => {
-				expect(users).toHaveLength(1);
-			});
+			function addMock() {
+				mockingoose.None.toReturn({});
+			}
+
+			expect(addMock).toThrow();
 		})
 	});
 
