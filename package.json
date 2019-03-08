@@ -5,6 +5,7 @@
   "main": "./lib",
   "scripts": {
     "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "start": "babel-node ./src",
     "build": "babel src -d lib -s"
   },
