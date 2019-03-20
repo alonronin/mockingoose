@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^22.4.3"
+    "@babel/plugin-transform-runtime": "^7.4.0",
+    "@babel/core": "^7.4.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/preset-env": "^7.4.1",
+    "jest": "^24.5.0"
   },
   "peerDependencies": {
     "mongoose": ">=4.9.10"
@@ -36,5 +38,8 @@
   },
   "engines": {
     "node": ">=6.4.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.4.0"
   }
 }

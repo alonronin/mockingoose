@@ -1,6 +1,7 @@
 import mockingoose from '../src/index';
-import mongoose, { Query, Aggregate } from 'mongoose';
+import mongoose from 'mongoose';
 import User from './User';
+
 
 describe('mockingoose', () => {
 	beforeEach(() => {
@@ -98,7 +99,7 @@ describe('mockingoose', () => {
 
 		it('should findById with function', () => {
 			const _doc = { name: 'name' };
-			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), _doc), 'findOne');
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), _doc), 'findOne');
 
 			return User.findById(1).then(doc => {
 				expect(doc.toObject()).toMatchObject(_doc);
@@ -116,7 +117,7 @@ describe('mockingoose', () => {
 
 		it('should count with function', () => {
 			const count = 2;
-			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'count');
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'count');
 
 			return User.count().then(result => {
 				expect(result).toBe(count);
@@ -134,7 +135,7 @@ describe('mockingoose', () => {
 
 		it('should countDocuments with function', () => {
 			const count = 2;
-			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'countDocuments');
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'countDocuments');
 
 			return User.countDocuments().then(result => {
 				expect(result).toBe(count);
@@ -152,7 +153,7 @@ describe('mockingoose', () => {
 
 		it('should estimatedDocumentCount with function', () => {
 			const count = 2;
-			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'estimatedDocumentCount');
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'estimatedDocumentCount');
 
 			return User.estimatedDocumentCount().then(result => {
 				expect(result).toBe(count);
@@ -208,7 +209,7 @@ describe('mockingoose', () => {
 		});
 
 		it('should update with exec and callback with function', (done) => {
-			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), { ok: 1, nModified: 1, n: 1 }), 'update');
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), { ok: 1, nModified: 1, n: 1 }), 'update');
 
 			User
 				.update({ email: 'name@mail.com' })
@@ -249,7 +250,7 @@ describe('mockingoose', () => {
 		});
 
 		it('should aggregate with callback using function', (done) => {
-			mockingoose.User.toReturn((agg) => (expect(agg).toBeInstanceOf(Aggregate), [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]), 'aggregate');
+			mockingoose.User.toReturn((agg) => (expect(agg).toBeInstanceOf(mongoose.Aggregate), [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]), 'aggregate');
 
 			User
 				.aggregate(
