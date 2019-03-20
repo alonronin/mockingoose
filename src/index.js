@@ -21,14 +21,16 @@ const ops = [
   'estimatedDocumentCount',
   'distinct',
   'findOneAndUpdate',
+  'findOneAndDelete',
   'findOneAndRemove',
+  'findOneAndReplace',
   'remove',
   'update',
   'deleteOne',
   'deleteMany',
 ];
 
-const mockedReturn = function (cb) {
+const mockedReturn = async function (cb) {
   const { op, model: { modelName }, _mongooseOptions = {} } = this;
   const Model = mongoose.model(modelName);
 
@@ -37,6 +39,8 @@ const mockedReturn = function (cb) {
   let err = null;
 
   if (mock instanceof Error) err = mock;
+
+  if (mock instanceof Function) mock = await mock(this);
 
   if (!mock && op === 'save') { mock = this;}
 
@@ -48,23 +52,38 @@ const mockedReturn = function (cb) {
 
   if (cb) return cb(err, mock);
 
-  if (err) return Promise.reject(err);
+  if (err) throw err;
 
-  return Promise.resolve(mock);
+  return mock;
 };
 
 ops.forEach(op => {
   mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (criteria, doc, options, callback) {
+    if ([
+        'find', 'findOne', 'count', 'countDocuments', 
+        'remove', 'deleteOne', 'deleteMany', 'findOneAndUpdate',
+        'findOneAndRemove', 'findOneAndDelete', 'findOneAndReplace'
+      ].includes(op) && typeof criteria !== 'function') {
+      // find and findOne can take conditions as the first paramter
+      // ensure they make it into the Query conditions
+      this.merge(criteria);
+    }
+
+    if (['distinct'].includes(op) && typeof doc !== 'function') {
+      // distinct has the conditions as the second parameter
+      this.merge(doc);
+    }
+
     switch (arguments.length) {
       case 4:
       case 3:
-        if (typeof options === 'function') {
+        if (typeof options === 'function' || typeof options === 'undefined') {
           callback = options;
           options = {};
         }
         break;
       case 2:
-        if (typeof doc === 'function') {
+        if (typeof doc === 'function' || typeof doc === 'undefined') {
           callback = doc;
           doc = criteria;
           criteria = undefined;
@@ -72,7 +91,7 @@ ops.forEach(op => {
         options = undefined;
         break;
       case 1:
-        if (typeof criteria === 'function') {
+        if (typeof criteria === 'function' || typeof criteria === 'undefined') {
           callback = criteria;
           criteria = options = doc = undefined;
         } else {
@@ -93,20 +112,22 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
 });
 
-mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
+mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(async function cb(cb) {
 	const { _model: { modelName } } = this;
 
 	let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
 
 	let err = null;
 
-	if (mock instanceof Error) err = mock;
+  if (mock instanceof Error) err = mock;
+  
+  if (mock instanceof Function) mock = await mock(this);
 
 	if (cb) return cb(err, mock);
 
-	if (err) return Promise.reject(err);
+	if (err) throw err;
 
-	return Promise.resolve(mock);
+	return mock;
 });
 
 const instance = [

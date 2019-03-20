@@ -1,5 +1,5 @@
 import mockingoose from '../src/index';
-import mongoose from 'mongoose';
+import mongoose, { Query, Aggregate } from 'mongoose';
 import User from './User';
 
 describe('mockingoose', () => {
@@ -48,6 +48,25 @@ describe('mockingoose', () => {
 				});
 		});
 
+		it('should find with function', () => {
+			mockingoose.User.toReturn((query) => {
+				expect(query.getQuery()).toMatchObject({ name: { '$in': [ 1 ] } });
+				return [{ name: '2' }];
+			} );
+
+			return User
+				.find({name: 'a'})
+				.where('name')
+				.in([1])
+				.then(result => {
+					expect(result).toHaveLength(1);
+					expect(result[0].toObject()).toHaveProperty('_id');
+					expect(result[0].toObject()).toHaveProperty('created');
+					expect(result[0].toObject()).toMatchObject({ name: '2' });
+					expect(result[0]).toBeInstanceOf(User);
+				});
+		});
+
 		it('should not find', () => {
 			mockingoose.User.toReturn([]);
 
@@ -77,9 +96,27 @@ describe('mockingoose', () => {
 			});
 		});
 
+		it('should findById with function', () => {
+			const _doc = { name: 'name' };
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), _doc), 'findOne');
+
+			return User.findById(1).then(doc => {
+				expect(doc.toObject()).toMatchObject(_doc);
+			});
+		});
+
 		it('should count', () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'count');
+
+			return User.count().then(result => {
+				expect(result).toBe(count);
+			});
+		});
+
+		it('should count with function', () => {
+			const count = 2;
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'count');
 
 			return User.count().then(result => {
 				expect(result).toBe(count);
@@ -95,9 +132,27 @@ describe('mockingoose', () => {
 			});
 		});
 
+		it('should countDocuments with function', () => {
+			const count = 2;
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'countDocuments');
+
+			return User.countDocuments().then(result => {
+				expect(result).toBe(count);
+			});
+		});
+
 		it('should estimatedDocumentCount', () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'estimatedDocumentCount');
+
+			return User.estimatedDocumentCount().then(result => {
+				expect(result).toBe(count);
+			});
+		});
+
+		it('should estimatedDocumentCount with function', () => {
+			const count = 2;
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), count), 'estimatedDocumentCount');
 
 			return User.estimatedDocumentCount().then(result => {
 				expect(result).toBe(count);
@@ -152,6 +207,18 @@ describe('mockingoose', () => {
 				});
 		});
 
+		it('should update with exec and callback with function', (done) => {
+			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(Query), { ok: 1, nModified: 1, n: 1 }), 'update');
+
+			User
+				.update({ email: 'name@mail.com' })
+				.where('name', 'name')
+				.exec((err, result) => {
+					expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
+					done();
+				});
+		});
+
 		it('should update with callback', (done) => {
 			mockingoose.User.toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
 
@@ -181,7 +248,26 @@ describe('mockingoose', () => {
 				);
 		});
 
-		it('should aggregate with exec snd callback', (done) => {
+		it('should aggregate with callback using function', (done) => {
+			mockingoose.User.toReturn((agg) => (expect(agg).toBeInstanceOf(Aggregate), [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]), 'aggregate');
+
+			User
+				.aggregate(
+					[{
+						'$group': {
+							'_id': {
+								'accountId': '$accountId'
+							}
+						}
+					}],
+					(err, result) => {
+						expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
+						done();
+					}
+				);
+		});
+
+		it('should aggregate with exec and callback', (done) => {
 			mockingoose.User.toReturn([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }], 'aggregate');
 
 			User
@@ -328,6 +414,27 @@ describe('mockingoose', () => {
 			expect(JSON.stringify(mockingoose.User)).toBe(mockString);
 			expect(mockingoose.toJSON()).toEqual(mocksObject);
 		});
+
+		it('should populate the Query properly with findOne', () => {
+			const _doc = {
+				_id: '507f191e810c19729de860ea',
+				name: 'name',
+				email: 'name@email.com'
+			}
+			const finder = (query) => {
+				if (query.getQuery()._id === '507f191e810c19729de860ea') {
+					return _doc;
+				}
+			};
+			
+			mockingoose.User.toReturn(finder, 'findOne'); // findById is findOne
+			
+			return User
+			.findById('507f191e810c19729de860ea')
+			.then(doc => {
+				expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
+			})
+		})
 	});
 
 	describe('check all instance methods', () => {
@@ -380,6 +487,8 @@ describe('mockingoose', () => {
 			'distinct',
 			'findOneAndUpdate',
 			'findOneAndRemove',
+			'findOneAndDelete',
+			'findOneAndReplace',
 			'remove',
 			'update',
 			'deleteOne',
@@ -448,13 +557,13 @@ describe('mockingoose', () => {
 						case 'distinct':
 						case 'findOne':
 						case 'findOneAndRemove':
+						case 'findOneAndDelete':
+						case 'findOneAndReplace':
 							args.push({});
-
 							break;
 						case 'update':
 						case 'findOneAndUpdate':
 							args.push({}, {}, {});
-
 							break;
 					}
 
