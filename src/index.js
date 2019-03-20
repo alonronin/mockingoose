@@ -77,13 +77,13 @@ ops.forEach(op => {
     switch (arguments.length) {
       case 4:
       case 3:
-        if (typeof options === 'function' || typeof options === 'undefined') {
+        if (typeof options === 'function') {
           callback = options;
           options = {};
         }
         break;
       case 2:
-        if (typeof doc === 'function' || typeof doc === 'undefined') {
+        if (typeof doc === 'function') {
           callback = doc;
           doc = criteria;
           criteria = undefined;
@@ -91,7 +91,7 @@ ops.forEach(op => {
         options = undefined;
         break;
       case 1:
-        if (typeof criteria === 'function' || typeof criteria === 'undefined') {
+        if (typeof criteria === 'function') {
           callback = criteria;
           criteria = options = doc = undefined;
         } else {
