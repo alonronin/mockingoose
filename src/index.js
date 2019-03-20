@@ -113,21 +113,21 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
 });
 
 mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(async function cb(cb) {
-	const { _model: { modelName } } = this;
+  const { _model: { modelName } } = this;
 
-	let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
+  let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
 
-	let err = null;
+  let err = null;
 
   if (mock instanceof Error) err = mock;
   
   if (mock instanceof Function) mock = await mock(this);
 
-	if (cb) return cb(err, mock);
+  if (cb) return cb(err, mock);
 
-	if (err) throw err;
+  if (err) throw err;
 
-	return mock;
+  return mock;
 });
 
 const instance = [
