@@ -80,6 +80,9 @@ describe('test mongoose User model', () => {
 Allows passing a function in order to return the result. 
 
 You will be able to inspect the query using the parameter passed to the function. This will be either a Mongoose [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) class, depending on your usage.
+
+You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatically test that the queries sent out are valid.
+
 ```js
 // __tests__/user.test.js
 import mockingoose from 'mockingoose';
@@ -93,6 +96,8 @@ describe('test mongoose User model', () => {
       email: 'name@email.com'
     }
     const finderMock = (query) => {
+      expect(query.getQuery()).toMatchSnapshot('findById query');
+
       if (query.getQuery()._id === '507f191e810c19729de860ea') {
         return _doc;
       }
