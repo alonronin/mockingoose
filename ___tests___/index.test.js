@@ -196,6 +196,18 @@ describe('mockingoose', () => {
 				});
 		});
 
+		it('should distinct with simple array', (done) => {
+			const distinct = ['a', 'b'];
+			mockingoose.User.toReturn(distinct, 'distinct');
+
+			User
+				.distinct()
+				.exec((err, result) => {
+					expect(result).toBe(distinct);
+					done();
+				});
+		});
+
 		it('should update with exec and callback', (done) => {
 			mockingoose.User.toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
 
