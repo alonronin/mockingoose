@@ -169,7 +169,9 @@ beforeEach(() => {
 - [x] `aggregate` - for aggregate framework
 
 ### Notes
-All operations works with `exec`, `promise` and `callback`.  
+The library is built with Typescript and typings are included.
+
+All operations work with `exec`, `promise` and `callback`.  
 
 if you are using `Model.create` and you don't pass a mock with mockingoose,  
 you'll receive the mongoose created doc (with ObjectId and transformations)
