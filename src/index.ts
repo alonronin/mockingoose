@@ -286,7 +286,7 @@ const target = {
   }
 };
 
-const getMockController = (prop: string | number | symbol) => {
+const getMockController = (prop: string | number | symbol): Mock => {
   return {
     toReturn(o: object | Function, op = "find") {
       target.__mocks.hasOwnProperty(prop)
