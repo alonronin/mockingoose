@@ -66,14 +66,21 @@ interface Mock {
   reset(op?: Ops): this;
 
   /**
-   * Returns a serializable object of mocks. Only supported if all mock results are primitives, not functions.
+   * Returns an object of mocks for this model. Only serializable if all mock results are primitives, not functions.
    */
   toJSON(): any;
 }
 
 interface Target {
   __mocks: any;
+  /**
+   * Resets all mocks.
+   */
   resetAll(): void;
+
+  /**
+   * Returns an object of mocks for all models. Only serializable if all mock results are primitives, not functions.
+   */
   toJSON(): any;
 }
 
