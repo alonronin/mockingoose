@@ -32,7 +32,7 @@
     "typescript": "^3.3.4000"
   },
   "peerDependencies": {
-    "mongoose": "^5.4.19"
+    "mongoose": ">=4.9.10"
   },
   "jest": {
     "testEnvironment": "node",
