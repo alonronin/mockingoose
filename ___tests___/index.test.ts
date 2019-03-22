@@ -1,7 +1,8 @@
 import mockingoose from '../src/index';
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 import User from './User';
-
+import { mockModel } from '../src/index';
+import { tuple } from '../src/tuple';
 
 describe('mockingoose', () => {
 	beforeEach(() => {
@@ -35,6 +36,22 @@ describe('mockingoose', () => {
 
 		it('should find', () => {
 			mockingoose.User.toReturn([{ name: '2' }]);
+
+			return User
+				.find()
+				.where('name')
+				.in([1])
+				.then(result => {
+					expect(result).toHaveLength(1);
+					expect(result[0].toObject()).toHaveProperty('_id');
+					expect(result[0].toObject()).toHaveProperty('created');
+					expect(result[0].toObject()).toMatchObject({ name: '2' });
+					expect(result[0]).toBeInstanceOf(User);
+				});
+		});
+
+		it('should find with mockModel', () => {
+			mockModel(User.modelName).toReturn([{ name: '2' }]);
 
 			return User
 				.find()
@@ -110,7 +127,7 @@ describe('mockingoose', () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'count');
 
-			return User.count().then(result => {
+			return User.count({}).then(result => {
 				expect(result).toBe(count);
 			});
 		});
@@ -119,7 +136,7 @@ describe('mockingoose', () => {
 			const count = 2;
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'count');
 
-			return User.count().then(result => {
+			return User.count({}).then(result => {
 				expect(result).toBe(count);
 			});
 		});
@@ -165,7 +182,7 @@ describe('mockingoose', () => {
 			mockingoose.User.toReturn(count, 'count');
 
 			User
-				.count()
+				.count({})
 				.exec((err, result) => {
 					expect(result).toBe(count);
 					done();
@@ -201,7 +218,7 @@ describe('mockingoose', () => {
 			mockingoose.User.toReturn(distinct, 'distinct');
 
 			User
-				.distinct()
+				.distinct('name')
 				.exec((err, result) => {
 					expect(result).toBe(distinct);
 					done();
@@ -212,7 +229,7 @@ describe('mockingoose', () => {
 			mockingoose.User.toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
 
 			User
-				.update({ email: 'name@mail.com' })
+				.update({ email: 'name@mail.com' }, {})
 				.where('name', 'name')
 				.exec((err, result) => {
 					expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
@@ -224,7 +241,7 @@ describe('mockingoose', () => {
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), { ok: 1, nModified: 1, n: 1 }), 'update');
 
 			User
-				.update({ email: 'name@mail.com' })
+				.update({ email: 'name@mail.com' }, {})
 				.where('name', 'name')
 				.exec((err, result) => {
 					expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
@@ -346,12 +363,12 @@ describe('mockingoose', () => {
 		});
 
 		it('should find with callback', (done) => {
-			const _doc = { name: 'name' };
+			const _doc = [{ name: 'name' }];
 			mockingoose.User.toReturn(_doc);
 
 			User.find({ _id: 1 }, (err, doc) => {
 				expect(err).toBeNull();
-				expect(doc.toObject()).toMatchObject(_doc);
+				expect(doc[0].toObject()).toMatchObject(_doc[0]);
 				done();
 			});
 		});
@@ -375,11 +392,11 @@ describe('mockingoose', () => {
 		});
 
 		it('should fail to reset a single mock operation', () => {
-			mockingoose.User.toReturn({ name: 'name' });
+			mockingoose.User.toReturn([{ name: 'name' }]);
 			mockingoose.User.reset('save');
 
 			return User.find().then(doc => {
-				expect(doc.toObject()).toMatchObject({ name: 'name' });
+				expect(doc[0].toObject()).toMatchObject({ name: 'name' });
 			});
 		});
 
@@ -451,10 +468,10 @@ describe('mockingoose', () => {
 	});
 
 	describe('check all instance methods', () => {
-		const instanceMethods = [
+		const instanceMethods = tuple(
 			'save',
 			'remove'
-		];
+		);
 
 		instanceMethods.forEach(op => {
 			it(`${op} resolves its promise correctly`, () => {
@@ -494,7 +511,7 @@ describe('mockingoose', () => {
 	});
 
 	describe('check all operations', () => {
-		const ops = [
+		const ops = tuple(
 			'find',
 			'findOne',
 			'distinct',
@@ -506,7 +523,7 @@ describe('mockingoose', () => {
 			'update',
 			'deleteOne',
 			'deleteMany'
-		];
+		);
 
 		describe('with promise', () => {
 			ops.forEach(op => {
@@ -595,13 +612,13 @@ describe('mockingoose', () => {
 
 	describe('mongoose connections', () => {
 		it('should mock mongoose.connect', () => {
-			return mongoose.connect().then(() => {
+			return mongoose.connect('mock').then(() => {
 				expect(mongoose.connect).toBeCalled();
 			});
 		});
 
 		it('should mock mongoose.createConnection', (done) => {
-			mongoose.createConnection().then(() => {
+			mongoose.createConnection('mock').then(() => {
 				expect(mongoose.createConnection).toBeCalled();
 				done();
 			});
@@ -622,7 +639,7 @@ describe('mockingoose', () => {
 			mockingoose.Model.toReturn({ name: 'test' }, 'save');
 			const conn = mongoose.createConnection('mongodb://localhost/test');
 
-			const schema = mongoose.Schema({
+			const schema = new mongoose.Schema({
 				name: String
 			});
 

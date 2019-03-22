@@ -12,9 +12,11 @@ $ npm i mockingoose -D
 ```js
 // using commonJS
 const mockingoose = require('mockingoose').default;
+const mockModel = mockingoose.mockModel;
 
 // using es201x
 import mockingoose from 'mockingoose';
+import { mockModel } from 'mockingoose';
 ```
 
 ## Usage
@@ -32,11 +34,12 @@ const schema = Schema({
 export default mongoose.model('User', schema);
 ```
 
-#### mockingoose#ModelName#toReturn(obj, operation = 'find')
+#### mockModel#ModelName#toReturn(obj, operation = 'find')
 Returns a plain object.
 ```js
 // __tests__/user.test.js
-import mockingoose from 'mockingoose';
+import { mockModel } from 'mockingoose';
+
 import model from './user';
 
 describe('test mongoose User model', () => {
@@ -47,8 +50,8 @@ describe('test mongoose User model', () => {
         email: 'name@email.com'
     };
     
-    mockingoose.User.toReturn(_doc, 'findOne'); // findById is findOne
-    
+    mockModel(User).toReturn(_doc, 'findOne');
+
     return model
     .findById({ _id: '507f191e810c19729de860ea'})
     .then(doc => {
@@ -76,7 +79,7 @@ describe('test mongoose User model', () => {
 ```
 
 
-#### mockingoose#ModelName#toReturn(fn, operation = 'find')
+#### mockModel#ModelName#toReturn(fn, operation = 'find')
 Allows passing a function in order to return the result. 
 
 You will be able to inspect the query using the parameter passed to the function. This will be either a Mongoose [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) class, depending on your usage.
@@ -85,7 +88,7 @@ You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatic
 
 ```js
 // __tests__/user.test.js
-import mockingoose from 'mockingoose';
+import { mockModel } from 'mockingoose';
 import model from './user';
 
 describe('test mongoose User model', () => {
@@ -103,7 +106,7 @@ describe('test mongoose User model', () => {
       }
     };
     
-    mockingoose.User.toReturn(finderMock, 'findOne'); // findById is findOne
+    mockModel(User).toReturn(finderMock, 'findOne'); // findById is findOne
     
     return User
     .findById('507f191e810c19729de860ea')
@@ -120,18 +123,18 @@ will reset Model mock, if pass an operation, will reset only this operation mock
 
 ```js
 it('should reset model mock', () => {
-  mockingoose.User.toReturn({ name: '1' });
-  mockingoose.User.toReturn({ name: '2' }, 'save');
+  mockModel(User).toReturn({ name: '1' });
+  mockModel(User).toReturn({ name: '2' }, 'save');
   
-  mockingoose.User.reset(); // will reset all operations;
-  mockingoose.User.reset('find'); // will reset only find operations;
+  mockModel(User).reset(); // will reset all operations;
+  mockModel(User).reset('find'); // will reset only find operations;
 })
 ```
 
 you can also chain `mockingoose#ModelName` operations:
 
 ```js
-mockingoose.User
+mockModel(User)
         .toReturn({ name: 'name' })
         .toReturn({ name: 'a name too' }, 'findOne')
         .toReturn({ name: 'another name' }, 'save')
@@ -180,7 +183,7 @@ the returned document is an instance of mongoose Model.
 you can simulate Error by passing an Error to mockingoose:
 
 ```js
-mockingoose.User.toReturn(new Error('My Error'), 'save');
+mockModel(User).toReturn(new Error('My Error'), 'save');
 
 return User
     .create({ name: 'name', email: 'name@email.com' })

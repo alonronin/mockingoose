@@ -1,19 +1,21 @@
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
+import { tuple } from './tuple';
 
-if(!/^5/.test(mongoose.version)) mongoose.Promise = Promise;
+if(!/^5/.test(mongoose.version)) (<any>mongoose).Promise = Promise;
 
-mongoose.connect = jest.fn().mockImplementation(() => Promise.resolve());
-mongoose.createConnection = jest
+(<any>mongoose).connect = jest.fn().mockImplementation(() => Promise.resolve());
+(<any>mongoose).createConnection = jest
   .fn()
   .mockReturnValue({
     on: jest.fn(),
     once: jest.fn(),
-    then(resolve) { return Promise.resolve(resolve(this)); },
+    then(resolve: any) { return Promise.resolve(resolve(this)); },
     catch() {},
     model: mongoose.model.bind(mongoose),
   });
 
-const ops = [
+
+const ops = tuple(
   'find',
   'findOne',
   'count',
@@ -28,7 +30,28 @@ const ops = [
   'update',
   'deleteOne',
   'deleteMany',
-];
+  'save',
+  'aggregate'
+)
+
+type Ops = (typeof ops)[number];
+
+interface Mock {
+  toReturn(expected: string | number | object | Function, op?: Ops): this;
+  reset(op?: Ops): this;
+  toJSON(): any;
+}
+
+interface Target {
+  __mocks: any;
+  resetAll(): void;
+  toJSON(): any;
+}
+
+type Proxy = Target & {
+  [index: string]: Mock;
+};
+
 
 const mockedReturn = async function (cb) {
   const { op, model: { modelName }, _mongooseOptions = {} } = this;
@@ -191,32 +214,45 @@ const target = {
   toJSON() { return this.__mocks; },
 };
 
+const getMockController = (prop: string | number | symbol) => {
+  return {
+    toReturn(o: object | Function, op = 'find') {
+      target.__mocks.hasOwnProperty(prop)
+        ? target.__mocks[prop][op] = o
+        : target.__mocks[prop] = { [op]: o };
+
+      return this;
+    },
+
+    reset(op?: string) {
+      op && delete target.__mocks[prop][op] || delete target.__mocks[prop];
+
+      return this;
+    },
+
+    toJSON() {
+      return target.__mocks[prop] || {};
+    },
+  };
+}
+
 const traps = {
-  get(target, prop) {
+  get(target: object, prop: string | number | symbol) {
     if (target.hasOwnProperty(prop)) return Reflect.get(target, prop);
 
-    return {
-      toReturn(o, op = 'find') {
-        target.__mocks.hasOwnProperty(prop)
-          ? target.__mocks[prop][op] = o
-          : target.__mocks[prop] = { [op]: o };
-
-        return this;
-      },
-
-      reset(op) {
-        op && delete target.__mocks[prop][op] || delete target.__mocks[prop];
-
-        return this;
-      },
-
-      toJSON() {
-        return target.__mocks[prop] || {};
-      },
-    };
+    return getMockController(prop);
   },
 };
 
-const mockingoose = new Proxy(target, traps);
+const mockingoose: Proxy = new Proxy(target, traps) as any;
+
+export const mockModel = (model: string | mongoose.Model<any>) => {
+  const modelName = typeof model === 'function' ? model.modelName : model;
+  if (typeof modelName === 'string') {
+    return getMockController(modelName);
+  } else {
+    throw new Error('model must be a string or mongoose.Model');
+  }
+}
 
 export default mockingoose;

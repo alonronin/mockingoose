@@ -3,10 +3,10 @@
   "version": "2.12.0",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "test": "jest",
-    "start": "babel-node ./src",
-    "build": "babel src -d lib -s"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -24,22 +24,29 @@
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.4.0",
-    "@babel/core": "^7.4.0",
-    "@babel/cli": "^7.2.3",
-    "@babel/preset-env": "^7.4.1",
-    "jest": "^24.5.0"
+    "@types/jest": "^24.0.11",
+    "@types/mongoose": "^5.3.23",
+    "jest": "^24.5.0",
+    "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.4000"
   },
   "peerDependencies": {
-    "mongoose": ">=4.9.10"
+    "mongoose": "^5.4.19"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "testRegex": ".test.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    }
   },
   "engines": {
     "node": ">=6.4.0"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.4.0"
   }
 }
