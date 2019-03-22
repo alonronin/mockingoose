@@ -39,6 +39,17 @@ type ReturnFunction = (
   param: mongoose.Query<any> | mongoose.Aggregate<any>
 ) => {};
 
+type ExpectedReturnType =
+  | string
+  | number
+  | boolean
+  | symbol
+  | object
+  | {}
+  | void
+  | null
+  | undefined;
+
 interface Mock {
   /**
    * Specify an expected result for a specific mongoose function. This can be a primitive value or a function.
@@ -46,20 +57,7 @@ interface Mock {
    * @param expected Primitive value or function that returns the mocked value
    * @param op The operation to mock
    */
-  toReturn(
-    expected:
-      | string
-      | number
-      | boolean
-      | symbol
-      | object
-      | {}
-      | void
-      | null
-      | undefined
-      | ReturnFunction,
-    op?: Ops
-  ): this;
+  toReturn(expected: ExpectedReturnType | ReturnFunction, op?: Ops): this;
 
   /**
    * Reset all mocks
