@@ -50,8 +50,24 @@ describe('mockingoose', () => {
 				});
 		});
 
-		it('should find with mockModel', () => {
+		it('should find with mockModel with string', () => {
 			mockModel(User.modelName).toReturn([{ name: '2' }]);
+
+			return User
+				.find()
+				.where('name')
+				.in([1])
+				.then(result => {
+					expect(result).toHaveLength(1);
+					expect(result[0].toObject()).toHaveProperty('_id');
+					expect(result[0].toObject()).toHaveProperty('created');
+					expect(result[0].toObject()).toMatchObject({ name: '2' });
+					expect(result[0]).toBeInstanceOf(User);
+				});
+		});
+
+		it('should find with mockModel with Model', () => {
+			mockModel(User).toReturn([{ name: '2' }]);
 
 			return User
 				.find()
