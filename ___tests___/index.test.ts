@@ -11,186 +11,163 @@ describe('mockingoose', () => {
 	});
 
 	describe('explicit tests', () => {
-		it('should validate', () => {
+		it('should validate', async () => {
 			const user = new User({
 				name: 'user',
 				email: 'user@email.com'
 			});
 
-			return user.validate().then(() => {
-				expect(user.toObject()).toHaveProperty('created');
-				expect(user.toObject()).toHaveProperty('_id');
-			});
+			await user.validate();
+			expect(user.toObject()).toHaveProperty('created');
+			expect(user.toObject()).toHaveProperty('_id');
 		});
 
-		it('should lean', () => {
+		it('should lean', async () => {
 			mockingoose.User.toReturn([{ name: '2' }]);
 
-			return User
+			const result = await User
 				.find()
-				.lean()
-				.then(result => {
-					expect(result[0]).toMatchObject({ name: '2' });
-				});
+				.lean();
+			expect(result[0]).toMatchObject({ name: '2' });
 		});
 
-		it('should find', () => {
+		it('should find', async () => {
 			mockingoose.User.toReturn([{ name: '2' }]);
 
-			return User
+			const result = await User
 				.find()
 				.where('name')
-				.in([1])
-				.then(result => {
-					expect(result).toHaveLength(1);
-					expect(result[0].toObject()).toHaveProperty('_id');
-					expect(result[0].toObject()).toHaveProperty('created');
-					expect(result[0].toObject()).toMatchObject({ name: '2' });
-					expect(result[0]).toBeInstanceOf(User);
-				});
+				.in([1]);
+			expect(result).toHaveLength(1);
+			expect(result[0].toObject()).toHaveProperty('_id');
+			expect(result[0].toObject()).toHaveProperty('created');
+			expect(result[0].toObject()).toMatchObject({ name: '2' });
+			expect(result[0]).toBeInstanceOf(User);
 		});
 
-		it('should find with mockModel with string', () => {
+		it('should find with mockModel with string', async () => {
 			mockModel(User.modelName).toReturn([{ name: '2' }]);
 
-			return User
+			const result = await User
 				.find()
 				.where('name')
-				.in([1])
-				.then(result => {
-					expect(result).toHaveLength(1);
-					expect(result[0].toObject()).toHaveProperty('_id');
-					expect(result[0].toObject()).toHaveProperty('created');
-					expect(result[0].toObject()).toMatchObject({ name: '2' });
-					expect(result[0]).toBeInstanceOf(User);
-				});
+				.in([1]);
+			expect(result).toHaveLength(1);
+			expect(result[0].toObject()).toHaveProperty('_id');
+			expect(result[0].toObject()).toHaveProperty('created');
+			expect(result[0].toObject()).toMatchObject({ name: '2' });
+			expect(result[0]).toBeInstanceOf(User);
 		});
 
-		it('should find with mockModel with Model', () => {
+		it('should find with mockModel with Model', async () => {
 			mockModel(User).toReturn([{ name: '2' }]);
 
-			return User
+			const result = await User
 				.find()
 				.where('name')
-				.in([1])
-				.then(result => {
-					expect(result).toHaveLength(1);
-					expect(result[0].toObject()).toHaveProperty('_id');
-					expect(result[0].toObject()).toHaveProperty('created');
-					expect(result[0].toObject()).toMatchObject({ name: '2' });
-					expect(result[0]).toBeInstanceOf(User);
-				});
+				.in([1]);
+			expect(result).toHaveLength(1);
+			expect(result[0].toObject()).toHaveProperty('_id');
+			expect(result[0].toObject()).toHaveProperty('created');
+			expect(result[0].toObject()).toMatchObject({ name: '2' });
+			expect(result[0]).toBeInstanceOf(User);
 		});
 
-		it('should find with function', () => {
-			mockingoose.User.toReturn((query) => {
+		it('should find with function', async () => {
+			mockingoose.User.toReturn((query: mongoose.Query<any>) => {
 				expect(query.getQuery()).toMatchObject({ name: { '$in': [ 1 ] } });
 				return [{ name: '2' }];
 			} );
 
-			return User
-				.find({name: 'a'})
+			const result = await User
+				.find({ name: 'a' })
 				.where('name')
-				.in([1])
-				.then(result => {
-					expect(result).toHaveLength(1);
-					expect(result[0].toObject()).toHaveProperty('_id');
-					expect(result[0].toObject()).toHaveProperty('created');
-					expect(result[0].toObject()).toMatchObject({ name: '2' });
-					expect(result[0]).toBeInstanceOf(User);
-				});
+				.in([1]);
+			expect(result).toHaveLength(1);
+			expect(result[0].toObject()).toHaveProperty('_id');
+			expect(result[0].toObject()).toHaveProperty('created');
+			expect(result[0].toObject()).toMatchObject({ name: '2' });
+			expect(result[0]).toBeInstanceOf(User);
 		});
 
-		it('should not find', () => {
+		it('should not find', async () => {
 			mockingoose.User.toReturn([]);
 
-			return User
-				.find()
-				.then(result => {
-					expect(result).toHaveLength(0);
-				});
+			const result = await User
+				.find();
+			expect(result).toHaveLength(0);
 		});
 
-		it('should not findOne', () => {
+		it('should not findOne', async () => {
 			mockingoose.User.toReturn(null, 'findOne');
 
-			return User
-				.findOne()
-				.then(result => {
-					expect(result).toBeFalsy();
-				});
+			const result = await User
+				.findOne();
+			expect(result).toBeFalsy();
 		});
 
-		it('should findById', () => {
+		it('should findById', async () => {
 			const _doc = { name: 'name' };
 			mockingoose.User.toReturn(_doc, 'findOne');
 
-			return User.findById(1).then(doc => {
-				expect(doc.toObject()).toMatchObject(_doc);
-			});
+			const doc = await User.findById(1);
+			expect(doc.toObject()).toMatchObject(_doc);
 		});
 
-		it('should findById with function', () => {
+		it('should findById with function', async () => {
 			const _doc = { name: 'name' };
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), _doc), 'findOne');
 
-			return User.findById(1).then(doc => {
-				expect(doc.toObject()).toMatchObject(_doc);
-			});
+			const doc = await User.findById(1);
+			expect(doc.toObject()).toMatchObject(_doc);
 		});
 
-		it('should count', () => {
+		it('should count', async () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'count');
 
-			return User.count({}).then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.count({});
+			expect(result).toBe(count);
 		});
 
-		it('should count with function', () => {
+		it('should count with function', async () => {
 			const count = 2;
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'count');
 
-			return User.count({}).then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.count({});
+			expect(result).toBe(count);
 		});
 
-		it('should countDocuments', () => {
+		it('should countDocuments', async () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'countDocuments');
 
-			return User.countDocuments().then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.countDocuments();
+			expect(result).toBe(count);
 		});
 
-		it('should countDocuments with function', () => {
+		it('should countDocuments with function', async () => {
 			const count = 2;
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'countDocuments');
 
-			return User.countDocuments().then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.countDocuments();
+			expect(result).toBe(count);
 		});
 
-		it('should estimatedDocumentCount', () => {
+		it('should estimatedDocumentCount', async () => {
 			const count = 2;
 			mockingoose.User.toReturn(count, 'estimatedDocumentCount');
 
-			return User.estimatedDocumentCount().then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.estimatedDocumentCount();
+			expect(result).toBe(count);
 		});
 
-		it('should estimatedDocumentCount with function', () => {
+		it('should estimatedDocumentCount with function', async () => {
 			const count = 2;
 			mockingoose.User.toReturn((query) => (expect(query).toBeInstanceOf(mongoose.Query), count), 'estimatedDocumentCount');
 
-			return User.estimatedDocumentCount().then(result => {
-				expect(result).toBe(count);
-			});
+			const result = await User.estimatedDocumentCount();
+			expect(result).toBe(count);
 		});
 
 		it('should count exec and cb', (done) => {
@@ -333,49 +310,38 @@ describe('mockingoose', () => {
 			);
 		});
 
-		it('should aggregate with promise', () => {
+		it('should aggregate with promise', async () => {
 			mockingoose.User.toReturn([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }], 'aggregate');
 
-			return User
-				.aggregate(
-					[{
-						'$group': {
-							'_id': {
-								'accountId': '$accountId'
-							}
+			const result = await User
+				.aggregate([{
+					'$group': {
+						'_id': {
+							'accountId': '$accountId'
 						}
-					}])
-				.then(result => {
-					expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
-				});
+					}
+				}]);
+			expect(result).toEqual([{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]);
 		});
 
-		it('should create returns mock', () => {
+		it('should create returns mock', async () => {
 			mockingoose.User.toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
 
-			return User
-				.create({ email: 'name@mail.com' })
-				.then(result => {
-					expect(JSON.parse(JSON.stringify(result))).toMatchObject({ _id: '507f191e810c19729de860ea' });
-				});
+			const result = await User
+				.create({ email: 'name@mail.com' });
+			expect(JSON.parse(JSON.stringify(result))).toMatchObject({ _id: '507f191e810c19729de860ea' });
 		});
 
-		it('should create returns mongoose document', () => {
-			return User
-				.create({ name: 'name', email: 'name@mail.com' })
-				.then(result => {
-					expect(result.toObject()).toMatchObject({ name: 'name', email: 'name@mail.com' });
-				});
+		it('should create returns mongoose document', async () => {
+			const result = await User
+				.create({ name: 'name', email: 'name@mail.com' });
+			expect(result.toObject()).toMatchObject({ name: 'name', email: 'name@mail.com' });
 		});
 
-		it('should return error', () => {
-			mockingoose.User.toReturn(new Error('My Error'), 'save');
-
-			return User
-				.create({ name: 'name', email: 'name@mail.com' })
-				.catch(err => {
-					expect(err.message).toBe('My Error');
-				});
+		it('should return error', async () => {
+			const error = new Error('My Error');
+			mockingoose.User.toReturn(error, 'save');
+			await expect(User.create({ name: 'name', email: 'name@mail.com' })).rejects.toEqual(error);
 		});
 
 		it('should find with callback', (done) => {
@@ -389,48 +355,41 @@ describe('mockingoose', () => {
 			});
 		});
 
-		it('should reset a single mock', () => {
+		it('should reset a single mock', async () => {
 			mockingoose.User.toReturn({ name: 'name' });
 			mockingoose.User.reset();
 
-			return User.find().then(doc => {
-				expect(doc).toBeFalsy();
-			});
+			const doc = await User.find();
+			expect(doc).toBeFalsy();
 		});
 
-		it('should reset a single mock operation', () => {
+		it('should reset a single mock operation', async () => {
 			mockingoose.User.toReturn({ name: 'name' });
 			mockingoose.User.reset('find');
 
-			return User.find().then(doc => {
-				expect(doc).toBeFalsy();
-			});
+			const doc = await User.find();
+			expect(doc).toBeFalsy();
 		});
 
-		it('should fail to reset a single mock operation', () => {
+		it('should fail to reset a single mock operation', async () => {
 			mockingoose.User.toReturn([{ name: 'name' }]);
 			mockingoose.User.reset('save');
 
-			return User.find().then(doc => {
-				expect(doc[0].toObject()).toMatchObject({ name: 'name' });
-			});
+			const doc = await User.find();
+			expect(doc[0].toObject()).toMatchObject({ name: 'name' });
 		});
 
-		it('should be able to chain operations', () => {
+		it('should be able to chain operations', async () => {
 			mockingoose.User
 				.toReturn({ name: 'name' }, 'findOne')
 				.toReturn({ name: 'another name' }, 'save');
 
-			return User.findOne().then(user => {
-				expect(user.toObject()).toMatchObject({ name: 'name' });
-
-				user.name = 'another name';
-				user.email = 'name@email.com'; // or we will get Schema validation error
-
-				return user.save().then(user => {
-					expect(user.toObject()).toMatchObject({ name: 'another name' });
-				});
-			});
+			const user = await User.findOne();
+			expect(user.toObject()).toMatchObject({ name: 'name' });
+			user.name = 'another name';
+			user.email = 'name@email.com'; // or we will get Schema validation error
+			const user_1 = await user.save();
+			expect(user_1.toObject()).toMatchObject({ name: 'another name' });
 		});
 
 		it('should return object with .toJSON()', () => {
@@ -461,7 +420,7 @@ describe('mockingoose', () => {
 			expect(mockingoose.toJSON()).toEqual(mocksObject);
 		});
 
-		it('should populate the Query properly with findOne', () => {
+		it('should populate the Query properly with findOne', async () => {
 			const _doc = {
 				_id: '507f191e810c19729de860ea',
 				name: 'name',
@@ -475,11 +434,9 @@ describe('mockingoose', () => {
 			
 			mockingoose.User.toReturn(finder, 'findOne'); // findById is findOne
 			
-			return User
-			.findById('507f191e810c19729de860ea')
-			.then(doc => {
-				expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-			})
+			const doc = await User
+				.findById('507f191e810c19729de860ea');
+			expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
 		})
 	});
 
@@ -490,7 +447,7 @@ describe('mockingoose', () => {
 		);
 
 		instanceMethods.forEach(op => {
-			it(`${op} resolves its promise correctly`, () => {
+			it(`${op} resolves its promise correctly`, async () => {
 				const mocked = {
 					name: op,
 					email: 'name@email.com'
@@ -499,12 +456,9 @@ describe('mockingoose', () => {
 				mockingoose.User.toReturn(mocked, 'findOne')
 					.toReturn(mocked, op);
 
-				return User.findOne().then(user => {
-					return user[op]();
-				})
-					.then(user => {
-						expect(user).toBeTruthy();
-					});
+				const user = await User.findOne();
+				const user_1 = await user[op]();
+				expect(user_1).toBeTruthy();
 			});
 		});
 
@@ -627,10 +581,9 @@ describe('mockingoose', () => {
 	});
 
 	describe('mongoose connections', () => {
-		it('should mock mongoose.connect', () => {
-			return mongoose.connect('mock').then(() => {
-				expect(mongoose.connect).toBeCalled();
-			});
+		it('should mock mongoose.connect', async () => {
+			await mongoose.connect('mock');
+			expect(mongoose.connect).toBeCalled();
 		});
 
 		it('should mock mongoose.createConnection', (done) => {
