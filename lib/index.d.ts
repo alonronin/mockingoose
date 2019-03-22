@@ -4,8 +4,21 @@ declare type Ops = (typeof ops)[number];
 declare type ReturnFunction = (param: mongoose.Query<any> | mongoose.Aggregate<any>) => {};
 declare type ExpectedReturnType = string | number | boolean | symbol | object | {} | void | null | undefined;
 interface Mock {
+    /**
+     * Specify an expected result for a specific mongoose function. This can be a primitive value or a function.
+     * If used with a function, you will have access to the Query or Aggregate mongoose class.
+     * @param expected Primitive value or function that returns the mocked value
+     * @param op The operation to mock
+     */
     toReturn(expected: ExpectedReturnType | ReturnFunction, op?: Ops): this;
+    /**
+     * Reset all mocks
+     * @param op Optional parameter to reset, if not specified, resets everything
+     */
     reset(op?: Ops): this;
+    /**
+     * Returns a serializable object of mocks. Only supported if all mock results are primitives, not functions.
+     */
     toJSON(): any;
 }
 interface Target {
@@ -17,5 +30,9 @@ declare type Proxy = Target & {
     [index: string]: Mock;
 };
 declare const mockingoose: Proxy;
+/**
+ * Returns a helper with which you can set up mocks for a particular Model
+ * @param {string | mongoose.Model} model either a string model name, or a mongoose.Model instance
+ */
 export declare const mockModel: (model: string | mongoose.Model<any, {}>) => Mock;
 export default mockingoose;
