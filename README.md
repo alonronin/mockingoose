@@ -33,7 +33,7 @@ export default mongoose.model('User', schema);
 ```
 
 #### mockingoose#ModelName#toReturn(obj, operation = 'find')
-
+Returns a plain object.
 ```js
 // __tests__/user.test.js
 import mockingoose from 'mockingoose';
@@ -72,6 +72,45 @@ describe('test mongoose User model', () => {
         expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
       })
     })
+})
+```
+
+
+#### mockingoose#ModelName#toReturn(fn, operation = 'find')
+Allows passing a function in order to return the result. 
+
+You will be able to inspect the query using the parameter passed to the function. This will be either a Mongoose [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) class, depending on your usage.
+
+You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatically test that the queries sent out are valid.
+
+```js
+// __tests__/user.test.js
+import mockingoose from 'mockingoose';
+import model from './user';
+
+describe('test mongoose User model', () => {
+  it('should return the doc with findById', () => {
+    const _doc = {
+      _id: '507f191e810c19729de860ea',
+      name: 'name',
+      email: 'name@email.com'
+    }
+    const finderMock = (query) => {
+      expect(query.getQuery()).toMatchSnapshot('findById query');
+
+      if (query.getQuery()._id === '507f191e810c19729de860ea') {
+        return _doc;
+      }
+    };
+    
+    mockingoose.User.toReturn(finderMock, 'findOne'); // findById is findOne
+    
+    return User
+    .findById('507f191e810c19729de860ea')
+    .then(doc => {
+      expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
+    })
+  })
 })
 ```
 

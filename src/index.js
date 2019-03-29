@@ -21,14 +21,16 @@ const ops = [
   'estimatedDocumentCount',
   'distinct',
   'findOneAndUpdate',
+  'findOneAndDelete',
   'findOneAndRemove',
+  'findOneAndReplace',
   'remove',
   'update',
   'deleteOne',
   'deleteMany',
 ];
 
-const mockedReturn = function (cb) {
+const mockedReturn = async function (cb) {
   const { op, model: { modelName }, _mongooseOptions = {} } = this;
   const Model = mongoose.model(modelName);
 
@@ -38,9 +40,11 @@ const mockedReturn = function (cb) {
 
   if (mock instanceof Error) err = mock;
 
+  if (mock instanceof Function) mock = await mock(this);
+
   if (!mock && op === 'save') { mock = this;}
 
-  if (mock && mock instanceof Model === false && (!['update', 'count', 'countDocuments', 'estimatedDocumentCount'].includes(op))) {
+  if (mock && mock instanceof Model === false && (!['update', 'count', 'countDocuments', 'estimatedDocumentCount', 'distinct'].includes(op))) {
     mock = Array.isArray(mock) ? mock.map(item => new Model(item)) : new Model(mock);
 
     if (_mongooseOptions.lean) mock = Array.isArray(mock) ? mock.map(item => item.toObject()) : mock.toObject();
@@ -48,13 +52,28 @@ const mockedReturn = function (cb) {
 
   if (cb) return cb(err, mock);
 
-  if (err) return Promise.reject(err);
+  if (err) throw err;
 
-  return Promise.resolve(mock);
+  return mock;
 };
 
 ops.forEach(op => {
   mongoose.Query.prototype[op] = jest.fn().mockImplementation(function (criteria, doc, options, callback) {
+    if ([
+        'find', 'findOne', 'count', 'countDocuments', 
+        'remove', 'deleteOne', 'deleteMany', 'findOneAndUpdate',
+        'findOneAndRemove', 'findOneAndDelete', 'findOneAndReplace'
+      ].includes(op) && typeof criteria !== 'function') {
+      // find and findOne can take conditions as the first paramter
+      // ensure they make it into the Query conditions
+      this.merge(criteria);
+    }
+
+    if (['distinct'].includes(op) && typeof doc !== 'function') {
+      // distinct has the conditions as the second parameter
+      this.merge(doc);
+    }
+
     switch (arguments.length) {
       case 4:
       case 3:
@@ -93,20 +112,22 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
   return mockedReturn.call(this, cb);
 });
 
-mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(function cb(cb) {
-	const { _model: { modelName } } = this;
+mongoose.Aggregate.prototype.exec = jest.fn().mockImplementation(async function cb(cb) {
+  const { _model: { modelName } } = this;
 
-	let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
+  let mock = mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
 
-	let err = null;
+  let err = null;
 
-	if (mock instanceof Error) err = mock;
+  if (mock instanceof Error) err = mock;
+  
+  if (mock instanceof Function) mock = await mock(this);
 
-	if (cb) return cb(err, mock);
+  if (cb) return cb(err, mock);
 
-	if (err) return Promise.reject(err);
+  if (err) throw err;
 
-	return Promise.resolve(mock);
+  return mock;
 });
 
 const instance = [
