@@ -117,7 +117,7 @@ describe('test mongoose User model', () => {
 })
 ```
 
-#### mockingoose#ModelName#reset(operation = undefined)
+#### mockModel#ModelName#reset(operation = undefined)
 
 will reset Model mock, if pass an operation, will reset only this operation mock.
 
