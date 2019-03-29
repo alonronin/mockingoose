@@ -45,6 +45,18 @@ describe('mockingoose', () => {
 			expect(result[0]).toBeInstanceOf(User);
 		});
 
+		it('should work with function that is not an instance of a function', async () => {
+			const returnMock = jest.fn().mockReturnValue({ name: '2' });
+			mockingoose.User.toReturn(returnMock, 'findOne');
+
+			const result = await User
+				.findOne();
+			expect(result.toObject()).toHaveProperty('_id');
+			expect(result.toObject()).toHaveProperty('created');
+			expect(result.toObject()).toMatchObject({ name: '2' });
+			expect(result).toBeInstanceOf(User);
+		})
+
 		it('should find with mockModel with string', async () => {
 			mockModel(User.modelName).toReturn([{ name: '2' }]);
 

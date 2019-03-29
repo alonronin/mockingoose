@@ -103,7 +103,7 @@ const mockedReturn = async function(cb) {
 
   if (mock instanceof Error) err = mock;
 
-  if (mock instanceof Function) mock = await mock(this);
+  if (typeof mock === 'function') mock = await mock(this);
 
   if (!mock && op === "save") {
     mock = this;
@@ -220,7 +220,7 @@ mongoose.Aggregate.prototype.exec = jest
 
     if (mock instanceof Error) err = mock;
 
-    if (mock instanceof Function) mock = await mock(this);
+    if (typeof mock === 'function') mock = await mock(this);
 
     if (cb) return cb(err, mock);
 
