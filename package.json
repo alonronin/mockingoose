@@ -48,8 +48,5 @@
   },
   "engines": {
     "node": ">=6.4.0"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.4.0"
   }
 }
