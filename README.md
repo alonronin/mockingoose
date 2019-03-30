@@ -11,7 +11,7 @@ $ npm i mockingoose -D
 ## Import the library
 ```js
 // using commonJS
-const mockingoose = require('mockingoose').default; // if you need to call mockingoose.resetAll()
+const mockingoose = require('mockingoose').default;
 
 // using es201x
 import mockingoose from 'mockingoose';
