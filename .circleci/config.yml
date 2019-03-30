@@ -15,7 +15,7 @@ jobs:
 
     - run: npm install
     - run: npm install mongoose --no-save
-    - run: npm lint
+    - run: npm run lint
     - run: npm test
 
     - save_cache:
