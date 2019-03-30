@@ -36,7 +36,7 @@ const schema = Schema({
 export default mongoose.model('User', schema);
 ```
 
-#### mockingoose#ModelName#toReturn(obj, operation = 'find')
+#### mockingoose(Model).toReturn(obj, operation = 'find')
 
 Returns a plain object.
 
@@ -80,7 +80,7 @@ describe('test mongoose User model', () => {
 });
 ```
 
-#### mockingoose#ModelName#toReturn(fn, operation = 'find')
+#### mockingoose(Model).toReturn(fn, operation = 'find')
 
 Allows passing a function in order to return the result.
 
@@ -117,7 +117,7 @@ describe('test mongoose User model', () => {
 });
 ```
 
-#### mockingoose#ModelName#reset(operation = undefined)
+#### mockingoose(Model).reset(operation = undefined)
 
 will reset Model mock, if pass an operation, will reset only this operation mock.
 
@@ -141,7 +141,7 @@ mockingoose(model)
   .reset('find');
 ```
 
-#### mockingoose#resetAll()
+#### mockingoose.resetAll()
 
 will reset all mocks.
 
@@ -198,9 +198,14 @@ All operations work with `exec`, `promise` and `callback`.
 
 - check tests for more, feel free to fork and contribute.
 
-### TODO:
+#### Recent Changes:
 
-- [x] Return `Jest.fn` for `Model.save` mock
-- [x] Support `Model.aggregate`
+- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the now the recommended usage, with `Model` being a Mongoose model class. 
+
+  Alternatively, you may pass a string with the model name.
+
+- `mockingoose(Model).toReturn((query) => value)` can now take also take a function as a parameter. 
+
+  The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
