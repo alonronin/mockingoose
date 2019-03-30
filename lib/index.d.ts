@@ -34,7 +34,7 @@ interface Target {
 }
 declare type Proxy = Target & {
     [index: string]: Mock;
-};
+} & typeof mockModel;
 declare const mockingoose: Proxy;
 /**
  * Returns a helper with which you can set up mocks for a particular Model
