@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
 import mockingoose from '../src/index';
-import { mockModel } from '../src/index';
 import { tuple } from '../src/tuple';
 import User from './User';
 
@@ -64,8 +63,8 @@ describe('mockingoose', () => {
       expect(result).toBeInstanceOf(User);
     });
 
-    it('should find with mockModel with string', async () => {
-      mockModel(User.modelName).toReturn([{ name: '2' }]);
+    it('should find with mockingoose(model) with string', async () => {
+      mockingoose(User.modelName).toReturn([{ name: '2' }]);
 
       const result = await User.find()
         .where('name')
@@ -77,8 +76,8 @@ describe('mockingoose', () => {
       expect(result[0]).toBeInstanceOf(User);
     });
 
-    it('should find with mockModel with Model', async () => {
-      mockModel(User).toReturn([{ name: '2' }]);
+    it('should find with mockingoose(model) with Model', async () => {
+      mockingoose(User).toReturn([{ name: '2' }]);
 
       const result = await User.find()
         .where('name')

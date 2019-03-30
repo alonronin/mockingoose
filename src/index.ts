@@ -365,7 +365,7 @@ const mockingoose: Proxy = new Proxy(proxyTarget, proxyTraps) as any;
  * Returns a helper with which you can set up mocks for a particular Model
  * @param {string | mongoose.Model} model either a string model name, or a mongoose.Model instance
  */
-export const mockModel = (model: string | mongoose.Model<any>) => {
+const mockModel = (model: string | mongoose.Model<any>) => {
   const modelName = typeof model === 'function' ? model.modelName : model;
   if (typeof modelName === 'string') {
     return getMockController(modelName);
