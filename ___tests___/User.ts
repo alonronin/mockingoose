@@ -1,5 +1,5 @@
-import * as mongoose from "mongoose";
-import { Schema } from "mongoose";
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
 export interface IUser extends mongoose.Document {
   name: string;
@@ -9,16 +9,16 @@ export interface IUser extends mongoose.Document {
 }
 
 const schema = new Schema({
-  name: String,
-  email: { type: String, required: true },
   created: { type: Date, default: Date.now },
-  saveCount: { type: Number, default: 0 }
+  email: { type: String, required: true },
+  name: String,
+  saveCount: { type: Number, default: 0 },
 });
 
-schema.pre("save", function() {
-  (<any>this).saveCount++;
+schema.pre('save', function() {
+  (this as any).saveCount++;
 });
 
-const User = mongoose.model<IUser>("User", schema);
+const User = mongoose.model<IUser>('User', schema);
 
 export default User;
