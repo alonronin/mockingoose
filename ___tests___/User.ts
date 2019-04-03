@@ -1,13 +1,13 @@
 import * as mongoose from 'mongoose';
 import { Schema } from 'mongoose';
-const { ObjectId } = Schema.Types;
+import ObjectId = Schema.Types.ObjectId;
 
 export interface IUser extends mongoose.Document {
   name: string;
   email: string;
   created: Date;
   saveCount: number;
-  foreignKey: Object,
+  foreignKey: ObjectId,
 }
 
 const schema = new Schema({
