@@ -192,6 +192,30 @@ All operations work with `exec`, `promise` and `callback`.
   });
   ```
 
+- you can mock `.popultate` in your mocked result just be sure to change 
+  the `Schema`'s path to appropriate type (eg: `Object` | `Mixed`):
+  
+  ```js
+  User.schema.path('foreignKey', Object);
+  
+  const doc = {
+  	email: 'test@mail.com',
+    foreignKey: {
+  	  _id: '5ca4af76384306089c1c30ba',
+      name: 'test',
+      value: 'test',
+    },
+    name: 'Name',
+    saveCount: 1,
+   };
+    
+  mockingoose(User).toReturn(doc);
+    
+  const result = await User.find();
+    
+  expect(result).toMatchObject(doc);
+  ```
+
 - no connection is made to the database (mongoose.connect is jest.fn())
 
 - will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
@@ -200,11 +224,11 @@ All operations work with `exec`, `promise` and `callback`.
 
 #### Recent Changes:
 
-- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the now the recommended usage, with `Model` being a Mongoose model class. 
+- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the now the recommended usage, with `Model` being a Mongoose model class.
 
   Alternatively, you may pass a string with the model name.
 
-- `mockingoose(Model).toReturn((query) => value)` can now take also take a function as a parameter. 
+- `mockingoose(Model).toReturn((query) => value)` can now take also take a function as a parameter.
 
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
