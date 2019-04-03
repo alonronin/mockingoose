@@ -495,6 +495,27 @@ describe('mockingoose', () => {
       const doc = await User.findById('507f191e810c19729de860ea');
       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(docObj);
     });
+
+    it('should mock .populate', async () => {
+      User.schema.path('foreignKey', Object);
+
+      const doc = {
+        email: 'test@mail.com',
+        name: 'Name',
+        saveCount: 1,
+        foreignKey: {
+          _id: '5ca4af76384306089c1c30ba',
+          name: 'test',
+          value: 'test'
+        }
+      };
+
+      mockingoose(User).toReturn(doc);
+
+      const result = await User.find();
+
+      expect(result).toMatchObject(doc);
+    })
   });
 
   describe('check all instance methods', () => {
