@@ -192,22 +192,22 @@ All operations work with `exec`, `promise` and `callback`.
   });
   ```
 
-- you can mock `.popultate` in your mocked result just be sure to change 
+- you can mock `.populate` in your mocked result just be sure to change 
   the `Schema`'s path to appropriate type (eg: `Object` | `Mixed`):
   
   ```js
   User.schema.path('foreignKey', Object);
   
   const doc = {
-  	email: 'test@mail.com',
+    email: 'test@mail.com',
     foreignKey: {
-  	  _id: '5ca4af76384306089c1c30ba',
+      _id: '5ca4af76384306089c1c30ba',
       name: 'test',
       value: 'test',
     },
     name: 'Name',
     saveCount: 1,
-   };
+  };
     
   mockingoose(User).toReturn(doc);
     
