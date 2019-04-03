@@ -3,19 +3,19 @@ import { Schema } from 'mongoose';
 import ObjectId = Schema.Types.ObjectId;
 
 export interface IUser extends mongoose.Document {
-  name: string;
-  email: string;
   created: Date;
+  email: string;
+  foreignKey: ObjectId;
+  name: string;
   saveCount: number;
-  foreignKey: ObjectId,
 }
 
 const schema = new Schema({
   created: { type: Date, default: Date.now },
   email: { type: String, required: true },
+  foreignKey: ObjectId,
   name: String,
   saveCount: { type: Number, default: 0 },
-  foreignKey: ObjectId
 });
 
 schema.pre('save', function() {
