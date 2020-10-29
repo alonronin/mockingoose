@@ -234,8 +234,12 @@ All operations work with `exec`, `promise` and `callback`.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
 
-### Shoutout to our communiti
+### Shoutout to our amazing community
+
+#### Stargazers
 
 [![Stargazers repo roster for @alonronin/mockingoose](https://reporoster.com/stars/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/stargazers)
+
+#### Forkers
 
 [![Forkers repo roster for @alonronin/mockingoose](https://reporoster.com/forks/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/network/members)
