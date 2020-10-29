@@ -233,3 +233,9 @@ All operations work with `exec`, `promise` and `callback`.
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
+
+### Shoutout to our communiti
+
+[![Stargazers repo roster for @alonronin/mockingoose](https://reporoster.com/stars/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/stargazers)
+
+[![Forkers repo roster for @alonronin/mockingoose](https://reporoster.com/forks/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/network/members)
