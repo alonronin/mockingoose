@@ -4,7 +4,8 @@
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "babel src -d lib -s"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,8 @@
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
+    "@babel/cli": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
     "jest": "^24.8.0",
     "prettier": "^1.18.2"
   },
