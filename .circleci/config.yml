@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-    - image: circleci/node:10
+    - image: circleci/node:latest
 
     working_directory: ~/repo
 
@@ -13,10 +13,9 @@ jobs:
         keys:
         - npm-cache-{{ checksum "package.json" }}
 
-    - run: npm install
+    - run: yarn
     - run: npm install mongoose --no-save
-    - run: npm run lint
-    - run: npm test
+    - run: yarn test
 
     - save_cache:
         paths:
