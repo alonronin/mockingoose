@@ -216,6 +216,8 @@ All operations work with `exec`, `promise` and `callback`.
   expect(result).toMatchObject(doc);
   ```
 
+- you can mock the `Model.exists()` by passing the `findOne` op. see #69.
+  
 - no connection is made to the database (mongoose.connect is jest.fn())
 
 - will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
