@@ -1,27 +1,26 @@
-import * as mongoose from 'mongoose';
-import { tuple } from './tuple';
+const mongoose = require('mongoose');
 
 if (!/^5/.test(mongoose.version)) {
-  (mongoose as any).Promise = Promise;
+  mongoose.Promise = Promise;
 }
 
-(mongoose as any).connect = jest
+mongoose.connect = jest
   .fn()
   .mockImplementation(() => Promise.resolve());
 
-(mongoose as any).createConnection = jest.fn().mockReturnValue({
+mongoose.createConnection = jest.fn().mockReturnValue({
   catch() {
     /* no op */
   },
   model: mongoose.model.bind(mongoose),
   on: jest.fn(),
   once: jest.fn(),
-  then(resolve: any) {
+  then(resolve) {
     return Promise.resolve(resolve(this));
   },
 });
 
-const ops = tuple(
+const ops = [
   'find',
   'findOne',
   'count',
@@ -34,62 +33,13 @@ const ops = tuple(
   'findOneAndReplace',
   'remove',
   'update',
+  'updateOne',
+  'updateMany',
   'deleteOne',
   'deleteMany',
   'save',
-  'aggregate'
-);
-
-type Ops = (typeof ops)[number];
-
-type ReturnFunction = (
-  param: mongoose.Query<any> | mongoose.Aggregate<any>
-) => {};
-
-type ExpectedReturnType =
-  | string
-  | number
-  | boolean
-  | symbol
-  | object
-  | {}
-  | void
-  | null
-  | undefined;
-
-interface Mock {
-  /**
-   * Specify an expected result for a specific mongoose function. This can be a primitive value or a function.
-   * If used with a function, you will have access to the Query or Aggregate mongoose class.
-   * @param expected Primitive value or function that returns the mocked value
-   * @param op The operation to mock
-   */
-  toReturn(expected: ExpectedReturnType | ReturnFunction, op?: Ops): this;
-
-  /**
-   * Reset all mocks
-   * @param op Optional parameter to reset, if not specified, resets everything
-   */
-  reset(op?: Ops): this;
-
-  /**
-   * Returns an object of mocks for this model. Only serializable if all mock results are primitives, not functions.
-   */
-  toJSON(): any;
-}
-
-interface Target {
-  __mocks: any;
-  /**
-   * Resets all mocks.
-   */
-  resetAll(): void;
-
-  /**
-   * Returns an object of mocks for all models. Only serializable if all mock results are primitives, not functions.
-   */
-  toJSON(): any;
-}
+  'aggregate',
+];
 
 const mockedReturn = async function(cb) {
   const {
@@ -118,9 +68,11 @@ const mockedReturn = async function(cb) {
 
   if (
     mock &&
-    mock instanceof Model === false &&
+    !(mock instanceof Model) &&
     ![
       'update',
+      'updateOne',
+      'updateMany',
       'count',
       'countDocuments',
       'estimatedDocumentCount',
@@ -318,9 +270,9 @@ const proxyTarget = Object.assign(() => void 0, {
   },
 });
 
-const getMockController = (prop: string | number | symbol): Mock => {
+const getMockController = prop => {
   return {
-    toReturn(o: object | ReturnFunction, op = 'find') {
+    toReturn(o, op = 'find') {
       proxyTarget.__mocks.hasOwnProperty(prop)
         ? (proxyTarget.__mocks[prop][op] = o)
         : (proxyTarget.__mocks[prop] = { [op]: o });
@@ -328,7 +280,7 @@ const getMockController = (prop: string | number | symbol): Mock => {
       return this;
     },
 
-    reset(op?: string) {
+    reset(op) {
       if (op) {
         delete proxyTarget.__mocks[prop][op];
       } else {
@@ -344,12 +296,8 @@ const getMockController = (prop: string | number | symbol): Mock => {
   };
 };
 
-type Proxy = Target & {
-  [index: string]: Mock;
-} & typeof mockModel;
-
 const proxyTraps = {
-  get(target: object, prop: string | number | symbol) {
+  get(target, prop) {
     if (target.hasOwnProperty(prop)) {
       return Reflect.get(target, prop);
     }
@@ -359,13 +307,13 @@ const proxyTraps = {
   apply: (target, thisArg, [prop]) => mockModel(prop),
 };
 
-const mockingoose: Proxy = new Proxy(proxyTarget, proxyTraps) as any;
+const mockingoose = new Proxy(proxyTarget, proxyTraps);
 
 /**
  * Returns a helper with which you can set up mocks for a particular Model
  * @param {string | mongoose.Model} model either a string model name, or a mongoose.Model instance
  */
-const mockModel = (model: string | mongoose.Model<any>) => {
+const mockModel = (model) => {
   const modelName = typeof model === 'function' ? model.modelName : model;
   if (typeof modelName === 'string') {
     return getMockController(modelName);
@@ -374,4 +322,4 @@ const mockModel = (model: string | mongoose.Model<any>) => {
   }
 };
 
-export default mockingoose;
+module.exports = mockingoose;

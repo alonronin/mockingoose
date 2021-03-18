@@ -1,15 +1,10 @@
 {
   "name": "mockingoose",
-  "version": "2.13.2",
+  "version": "2.14.0",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
-  "types": "./lib/index.d.ts",
   "scripts": {
-    "test": "jest",
-    "build": "tsc",
-    "lint:src": "tslint -c tslint.json 'src/**/*.ts'",
-    "lint:tests": "tslint -c tslint.json '___tests___/**/*.ts'",
-    "lint": "npm run lint:src && npm run lint:tests"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,23 +15,15 @@
     "mock",
     "mongoose"
   ],
-  "author": "",
+  "author": "Alon Valadji",
   "license": "The Unlicense",
   "bugs": {
     "url": "https://github.com/alonronin/mockingoose/issues"
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
-    "@types/jest": "^24.0.13",
-    "@types/mongoose": "^5.5.5",
     "jest": "^24.8.0",
-    "prettier": "^1.18.2",
-    "ts-jest": "^24.0.2",
-    "ts-node": "^8.2.0",
-    "tslint": "^5.17.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.1"
+    "prettier": "^1.18.2"
   },
   "peerDependencies": {
     "mongoose": ">=4.9.10"
@@ -48,10 +35,7 @@
       "json",
       "ts"
     ],
-    "testRegex": ".test.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    }
+    "testRegex": ".test.js$"
   },
   "engines": {
     "node": ">=6.4.0"

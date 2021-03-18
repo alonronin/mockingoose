@@ -1,7 +1,6 @@
-import * as mongoose from 'mongoose';
-import mockingoose from '../src/index';
-import { tuple } from '../src/tuple';
-import User from './User';
+const mongoose = require('mongoose');
+const mockingoose = require('../src/index');
+const User = require('./User');
 
 describe('mockingoose', () => {
   beforeEach(() => {
@@ -90,8 +89,8 @@ describe('mockingoose', () => {
     });
 
     it('should find with function', async () => {
-      mockingoose(User).toReturn((query: mongoose.Query<any>) => {
-        expect(query.getQuery()).toMatchObject({ name: { $in: [1] } });
+      mockingoose(User).toReturn((query) => {
+        expect(query.getFilter()).toMatchObject({ name: { $in: [1] } });
         return [{ name: '2' }];
       });
 
@@ -129,9 +128,13 @@ describe('mockingoose', () => {
 
     it('should findById with function', async () => {
       const docObj = { name: 'name' };
+
       mockingoose(User).toReturn(
-        query => (expect(query).toBeInstanceOf(mongoose.Query), docObj),
-        'findOne'
+        query => {
+          expect(query).toBeInstanceOf(mongoose.Query);
+          return docObj;
+        },
+        'findOne',
       );
 
       const doc = await User.findById(1);
@@ -149,8 +152,11 @@ describe('mockingoose', () => {
     it('should count with function', async () => {
       const count = 2;
       mockingoose(User).toReturn(
-        query => (expect(query).toBeInstanceOf(mongoose.Query), count),
-        'count'
+        query => {
+          expect(query).toBeInstanceOf(mongoose.Query);
+          return count;
+        },
+        'count',
       );
 
       const result = await User.count({});
@@ -168,8 +174,11 @@ describe('mockingoose', () => {
     it('should countDocuments with function', async () => {
       const count = 2;
       mockingoose(User).toReturn(
-        query => (expect(query).toBeInstanceOf(mongoose.Query), count),
-        'countDocuments'
+        query => {
+          expect(query).toBeInstanceOf(mongoose.Query);
+          return count;
+        },
+        'countDocuments',
       );
 
       const result = await User.countDocuments();
@@ -187,8 +196,11 @@ describe('mockingoose', () => {
     it('should estimatedDocumentCount with function', async () => {
       const count = 2;
       mockingoose(User).toReturn(
-        query => (expect(query).toBeInstanceOf(mongoose.Query), count),
-        'estimatedDocumentCount'
+        query => {
+          expect(query).toBeInstanceOf(mongoose.Query);
+          return count;
+        },
+        'estimatedDocumentCount',
       );
 
       const result = await User.estimatedDocumentCount();
@@ -236,9 +248,9 @@ describe('mockingoose', () => {
     });
 
     it('should update with exec and callback', done => {
-      mockingoose(User).toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
+      mockingoose(User).toReturn({ ok: 1, nModified: 1, n: 1 }, 'updateMany');
 
-      User.update({ email: 'name@mail.com' }, {})
+      User.updateMany({ email: 'name@mail.com' }, {})
         .where('name', 'name')
         .exec((err, result) => {
           expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
@@ -248,14 +260,14 @@ describe('mockingoose', () => {
 
     it('should update with exec and callback with function', done => {
       mockingoose(User).toReturn(
-        query => (
-          expect(query).toBeInstanceOf(mongoose.Query),
-          { ok: 1, nModified: 1, n: 1 }
-        ),
-        'update'
+        query => {
+          expect(query).toBeInstanceOf(mongoose.Query);
+          return { ok: 1, nModified: 1, n: 1 };
+        },
+        'updateMany',
       );
 
-      User.update({ email: 'name@mail.com' }, {})
+      User.updateMany({ email: 'name@mail.com' }, {})
         .where('name', 'name')
         .exec((err, result) => {
           expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
@@ -264,23 +276,23 @@ describe('mockingoose', () => {
     });
 
     it('should update with callback', done => {
-      mockingoose(User).toReturn({ ok: 1, nModified: 1, n: 1 }, 'update');
+      mockingoose(User).toReturn({ ok: 1, nModified: 1, n: 1 }, 'updateOne');
 
-      User.update(
+      User.updateOne(
         { name: 'name' },
         { email: 'name@mail.com' },
         {},
         (err, result) => {
           expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
           done();
-        }
+        },
       );
     });
 
     it('should aggregate with callback', done => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate'
+        'aggregate',
       );
 
       User.aggregate(
@@ -298,7 +310,7 @@ describe('mockingoose', () => {
             { _id: { accountId: '5aef17c3d7c488f401c101bd' } },
           ]);
           done();
-        }
+        },
       );
     });
 
@@ -306,9 +318,9 @@ describe('mockingoose', () => {
       mockingoose(User).toReturn(
         agg => (
           expect(agg).toBeInstanceOf(mongoose.Aggregate),
-          [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]
+            [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]
         ),
-        'aggregate'
+        'aggregate',
       );
 
       User.aggregate(
@@ -326,14 +338,14 @@ describe('mockingoose', () => {
             { _id: { accountId: '5aef17c3d7c488f401c101bd' } },
           ]);
           done();
-        }
+        },
       );
     });
 
     it('should aggregate with exec and callback', done => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate'
+        'aggregate',
       );
 
       User.aggregate([
@@ -355,7 +367,7 @@ describe('mockingoose', () => {
     it('should aggregate with promise', async () => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate'
+        'aggregate',
       );
 
       const result = await User.aggregate([
@@ -396,7 +408,7 @@ describe('mockingoose', () => {
       const error = new Error('My Error');
       mockingoose(User).toReturn(error, 'save');
       await expect(
-        User.create({ name: 'name', email: 'name@mail.com' })
+        User.create({ name: 'name', email: 'name@mail.com' }),
       ).rejects.toEqual(error);
     });
 
@@ -519,7 +531,7 @@ describe('mockingoose', () => {
   });
 
   describe('check all instance methods', () => {
-    const instanceMethods = tuple('save', 'remove');
+    const instanceMethods = ['save', 'remove'];
 
     instanceMethods.forEach(op => {
       it(`${op} resolves its promise correctly`, async () => {
@@ -557,7 +569,7 @@ describe('mockingoose', () => {
   });
 
   describe('check all operations', () => {
-    const ops = tuple(
+    const ops = [
       'find',
       'findOne',
       'distinct',
@@ -567,9 +579,11 @@ describe('mockingoose', () => {
       'findOneAndReplace',
       'remove',
       'update',
+      'updateOne',
+      'updateMany',
       'deleteOne',
-      'deleteMany'
-    );
+      'deleteMany',
+    ];
 
     describe('with promise', () => {
       ops.forEach(op => {
@@ -588,8 +602,8 @@ describe('mockingoose', () => {
 
           return User[op](...args).then(doc =>
             expect(
-              doc instanceof mongoose.Model ? doc.toObject() : doc
-            ).toMatchObject(mocked)
+              doc instanceof mongoose.Model ? doc.toObject() : doc,
+            ).toMatchObject(mocked),
           );
         });
       });
@@ -606,14 +620,14 @@ describe('mockingoose', () => {
 
           const args = [];
 
-          if (op === 'update') {
+          if (['update', 'updateOne', 'updateMany'].includes(op)) {
             args.push({}, {});
           }
 
           User[op](...args).exec((err, doc) => {
             expect(err).toBeNull();
             expect(
-              doc instanceof mongoose.Model ? doc.toObject() : doc
+              doc instanceof mongoose.Model ? doc.toObject() : doc,
             ).toMatchObject(mocked);
             done();
           });
@@ -641,6 +655,8 @@ describe('mockingoose', () => {
               args.push({});
               break;
             case 'update':
+            case 'updateOne':
+            case 'updateMany':
             case 'findOneAndUpdate':
               args.push({}, {}, {});
               break;
@@ -649,7 +665,7 @@ describe('mockingoose', () => {
           args.push((err, doc) => {
             expect(err).toBeNull();
             expect(
-              doc instanceof mongoose.Model ? doc.toObject() : doc
+              doc instanceof mongoose.Model ? doc.toObject() : doc,
             ).toMatchObject(mocked);
             done();
           });
