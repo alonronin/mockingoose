@@ -161,16 +161,16 @@ beforeEach(() => {
 - [x] `distinct` - for distinct query
 - [x] `findOneAndUpdate` - for findOneAndUpdate query
 - [x] `findOneAndRemove` - for findOneAndRemove query
-- [x] `update` - for update query
+- [x] `update` - for update query (DEPRECATED)
+- [x] `updateOne` - for updateOne query
+- [x] `updateMany` - for updateMany query
 - [x] `save` - for create, and save documents `Model.create()` or `Model.save()` or `doc.save()`
-- [x] `remove` - for remove query
+- [x] `remove` - for remove query (DEPRECATED)
 - [x] `deleteOne` - for deleteOne query
 - [x] `deleteMany` - for deleteMany query
 - [x] `aggregate` - for aggregate framework
 
 ### Notes
-
-The library is built with Typescript and typings are included.
 
 All operations work with `exec`, `promise` and `callback`.
 
@@ -180,7 +180,7 @@ All operations work with `exec`, `promise` and `callback`.
 
 - the returned document is an instance of mongoose Model.
 
-- `update` operation returns original mocked object.
+- `deleteOne` and `updateOne` operation returns original mocked object.
 
 - you can simulate Error by passing an Error to mockingoose:
 
