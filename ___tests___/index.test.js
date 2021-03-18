@@ -566,6 +566,22 @@ describe('mockingoose', () => {
         });
       });
     });
+
+    it('returns false for exists method', async () => {
+      mockingoose(User).toReturn(null, 'findOne');
+
+      const result = await User.exists({ name: 'test' });
+
+      expect(result).toBeFalsy();
+    });
+
+    it('returns true for exists method', async () => {
+      mockingoose(User).toReturn({}, 'findOne');
+
+      const result = await User.exists({ name: 'test' });
+
+      expect(result).toBeTruthy();
+    });
   });
 
   describe('check all operations', () => {
