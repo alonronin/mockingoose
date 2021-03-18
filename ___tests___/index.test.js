@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mockingoose = require('../src/index');
+const mockingoose = require('../src');
 const User = require('./User');
 
 describe('mockingoose', () => {
