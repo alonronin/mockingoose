@@ -19,18 +19,15 @@ $ yarn add mockingoose -D
 ## Import the library
 
 ```js
-// using commonJS
 const mockingoose = require('mockingoose').default;
 
-// using es201x
-import mockingoose from 'mockingoose';
 ```
 
 ## Usage
 
 ```js
 // user.js
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const schema = Schema({
@@ -39,7 +36,7 @@ const schema = Schema({
   created: { type: Date, default: Date.now },
 });
 
-export default mongoose.model('User', schema);
+module.exports = mongoose.model('User', schema);
 ```
 
 #### mockingoose(Model).toReturn(obj, operation = 'find')
@@ -48,9 +45,9 @@ Returns a plain object.
 
 ```js
 // __tests__/user.test.js
-import mockingoose from 'mockingoose';
+const mockingoose = require('mockingoose');
 
-import model from './user';
+const model = require('./user');
 
 describe('test mongoose User model', () => {
   it('should return the doc with findById', () => {
@@ -96,8 +93,8 @@ You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatic
 
 ```js
 // __tests__/user.test.js
-import mockingoose from 'mockingoose';
-import model from './user';
+const mockingoose = require('mockingoose');
+const model = require('./user');
 
 describe('test mongoose User model', () => {
   it('should return the doc with findById', () => {
