@@ -6,8 +6,14 @@
 
 ## Installation
 
+With NPM:
 ```bash
 $ npm i mockingoose -D
+```
+
+With Yarn:
+```bash
+$ yarn add mockingoose -D
 ```
 
 ## Import the library
