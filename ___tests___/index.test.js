@@ -75,19 +75,6 @@ describe('mockingoose', () => {
       expect(result[0]).toBeInstanceOf(User);
     });
 
-    it('should find with mockingoose(model) with Model', async () => {
-      mockingoose(User).toReturn([{ name: '2' }]);
-
-      const result = await User.find()
-        .where('name')
-        .in([1]);
-      expect(result).toHaveLength(1);
-      expect(result[0].toObject()).toHaveProperty('_id');
-      expect(result[0].toObject()).toHaveProperty('created');
-      expect(result[0].toObject()).toMatchObject({ name: '2' });
-      expect(result[0]).toBeInstanceOf(User);
-    });
-
     it('should find with function', async () => {
       mockingoose(User).toReturn((query) => {
         expect(query.getFilter()).toMatchObject({ name: { $in: [1] } });
@@ -316,10 +303,10 @@ describe('mockingoose', () => {
 
     it('should aggregate with callback using function', done => {
       mockingoose(User).toReturn(
-        agg => (
-          expect(agg).toBeInstanceOf(mongoose.Aggregate),
-            [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }]
-        ),
+        agg => {
+          expect(agg).toBeInstanceOf(mongoose.Aggregate);
+          return [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }];
+        },
         'aggregate',
       );
 
