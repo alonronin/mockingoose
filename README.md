@@ -19,7 +19,7 @@ $ yarn add mockingoose -D
 ## Import the library
 
 ```js
-const mockingoose = require('mockingoose').default;
+const mockingoose = require('mockingoose');
 
 ```
 
