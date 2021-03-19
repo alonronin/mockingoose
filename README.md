@@ -169,6 +169,7 @@ beforeEach(() => {
 - [x] `deleteOne` - for deleteOne query
 - [x] `deleteMany` - for deleteMany query
 - [x] `aggregate` - for aggregate framework
+- [x] `insertMany` - for `Model.insertMany()` bulk insert, can also pass `{ lean: true, rawResult: true }` options.
 
 ### Notes
 

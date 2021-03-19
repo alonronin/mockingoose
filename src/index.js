@@ -86,7 +86,16 @@ const mockedReturn = async function(cb) {
       ? mock.map(item => new Model(item))
       : new Model(mock);
 
-    if (_mongooseOptions.lean) {
+    if(op === 'insertMany') {
+      if(!Array.isArray(mock)) mock = [mock];
+
+      for(const doc of mock) {
+        const e = doc.validateSync();
+        if(e) throw e;
+      }
+    }
+
+    if (_mongooseOptions.lean || _mongooseOptions.rawResult) {
       mock = Array.isArray(mock)
         ? mock.map(item => item.toObject())
         : mock.toObject();
@@ -117,6 +126,9 @@ ops.forEach(op => {
           'remove',
           'deleteOne',
           'deleteMany',
+          'update',
+          'updateOne',
+          'updateMany',
           'findOneAndUpdate',
           'findOneAndRemove',
           'findOneAndDelete',
@@ -205,6 +217,23 @@ mongoose.Aggregate.prototype.exec = jest
 
     return mock;
   });
+
+mongoose.Model.insertMany = jest
+  .fn()
+  .mockImplementation(function(arr, options, cb) {
+    const op = 'insertMany';
+    const { modelName } = this;
+
+    if (typeof options === 'function') {
+      cb = options;
+      options = null;
+    } else {
+      this._mongooseOptions = options;
+    }
+
+    Object.assign(this, { op, model: { modelName }})
+    return mockedReturn.call(this, cb);
+  })
 
 const instance = ['remove', 'save'];
 

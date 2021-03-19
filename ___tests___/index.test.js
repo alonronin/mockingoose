@@ -517,31 +517,31 @@ describe('mockingoose', () => {
     });
 
     it('return correct mock for remove', async () => {
-      const doc = { n: 0, ok: 0, deletedCount: 0 }
+      const doc = { n: 0, ok: 0, deletedCount: 0 };
       mockingoose(User).toReturn(doc, 'remove');
 
       const result = await User.remove({ name: 'test' });
 
       expect(result).toBe(doc);
-    })
+    });
 
     it('return correct mock for deleteOne', async () => {
-      const doc = { n: 0, ok: 0, deletedCount: 0 }
+      const doc = { n: 0, ok: 0, deletedCount: 0 };
       mockingoose(User).toReturn(doc, 'deleteOne');
 
       const result = await User.deleteOne({ name: 'test' });
 
       expect(result).toBe(doc);
-    })
+    });
 
     it('return correct mock for deleteMany', async () => {
-      const doc = { n: 1, ok: 1, deletedCount: 10 }
+      const doc = { n: 1, ok: 1, deletedCount: 10 };
       mockingoose(User).toReturn(doc, 'deleteOne');
 
       const result = await User.deleteOne({ name: 'test' });
 
       expect(result).toBe(doc);
-    })
+    });
   });
 
   describe('check all instance methods', () => {
@@ -595,6 +595,36 @@ describe('mockingoose', () => {
       const result = await User.exists({ name: 'test' });
 
       expect(result).toBeTruthy();
+    });
+
+    it('returns should correctly mock insertMany', async () => {
+      const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
+
+      mockingoose(User).toReturn(docs, 'insertMany');
+
+      const result = await User.insertMany(docs);
+
+      expect(result.map(doc => doc instanceof mongoose.Model)).toStrictEqual([true, true, true]);
+    });
+
+    it('returns should correctly mock insertMany with lean option', async () => {
+      const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
+
+      mockingoose(User).toReturn(docs, 'insertMany');
+
+      const result = await User.insertMany(docs, { lean: true });
+
+      expect(result.map(doc => doc instanceof mongoose.Model)).toStrictEqual([false, false, false]);
+    });
+
+    it('returns should correctly mock insertMany with rawResult option', async () => {
+      const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
+
+      mockingoose(User).toReturn(docs, 'insertMany');
+
+      const result = await User.insertMany(docs, { rawResult: true });
+
+      expect(result.map(doc => doc instanceof mongoose.Model)).toStrictEqual([false, false, false]);
     });
   });
 
