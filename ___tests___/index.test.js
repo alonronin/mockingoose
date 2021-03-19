@@ -515,6 +515,33 @@ describe('mockingoose', () => {
 
       expect(result).toMatchObject(doc);
     });
+
+    it('return correct mock for remove', async () => {
+      const doc = { n: 0, ok: 0, deletedCount: 0 }
+      mockingoose(User).toReturn(doc, 'remove');
+
+      const result = await User.remove({ name: 'test' });
+
+      expect(result).toBe(doc);
+    })
+
+    it('return correct mock for deleteOne', async () => {
+      const doc = { n: 0, ok: 0, deletedCount: 0 }
+      mockingoose(User).toReturn(doc, 'deleteOne');
+
+      const result = await User.deleteOne({ name: 'test' });
+
+      expect(result).toBe(doc);
+    })
+
+    it('return correct mock for deleteMany', async () => {
+      const doc = { n: 1, ok: 1, deletedCount: 10 }
+      mockingoose(User).toReturn(doc, 'deleteOne');
+
+      const result = await User.deleteOne({ name: 'test' });
+
+      expect(result).toBe(doc);
+    })
   });
 
   describe('check all instance methods', () => {

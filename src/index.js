@@ -70,6 +70,9 @@ const mockedReturn = async function(cb) {
     mock &&
     !(mock instanceof Model) &&
     ![
+      'remove',
+      'deleteOne',
+      'deleteMany',
       'update',
       'updateOne',
       'updateMany',
