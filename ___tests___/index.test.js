@@ -597,15 +597,6 @@ describe('mockingoose', () => {
       expect(result).toBeTruthy();
     });
 
-    if('insert many', async () => {
-      const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
-      mockingoose(User).toReturn(docs, 'insertMany');
-      const result = await User.insertMany(docs);
-
-      console.log(result);
-
-    });
-
     it('returns should correctly mock insertMany', async () => {
       const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
 
