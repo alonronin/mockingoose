@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mockingoose = require('../src');
+const mockingoose = require('../');
 const User = require('./User');
 
 describe('mockingoose', () => {
@@ -595,6 +595,15 @@ describe('mockingoose', () => {
       const result = await User.exists({ name: 'test' });
 
       expect(result).toBeTruthy();
+    });
+
+    if('insert many', async () => {
+      const docs = [{ email: '1' }, { email: '2' }, { email: 3}];
+      mockingoose(User).toReturn(docs, 'insertMany');
+      const result = await User.insertMany(docs);
+
+      console.log(result);
+
     });
 
     it('returns should correctly mock insertMany', async () => {
