@@ -15,7 +15,7 @@ jobs:
 
     - run: yarn
     - run: npm install mongoose --no-save
-    - run: yarn test
+    - run: yarn build && yarn test
 
     - save_cache:
         paths:
