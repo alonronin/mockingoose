@@ -39,6 +39,7 @@ const ops = [
   'deleteMany',
   'save',
   'aggregate',
+  '$save'
 ];
 
 const mockedReturn = async function(cb) {
@@ -63,6 +64,10 @@ const mockedReturn = async function(cb) {
   }
 
   if (!mock && op === 'save') {
+    mock = this;
+  }
+
+  if (!mock && op === '$save') {
     mock = this;
   }
 
@@ -235,7 +240,7 @@ mongoose.Model.insertMany = jest
     return mockedReturn.call(this, cb);
   })
 
-const instance = ['remove', 'save'];
+const instance = ['remove', 'save', '$save'];
 
 instance.forEach(methodName => {
   mongoose.Model.prototype[methodName] = jest
