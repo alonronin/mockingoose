@@ -3,6 +3,7 @@
   "version": "2.15.2",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
+  "types": "./types.d.ts",
   "scripts": {
     "test": "jest",
     "dev": "yarn build -w",
