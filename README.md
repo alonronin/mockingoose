@@ -71,7 +71,7 @@ describe('test mongoose User model', () => {
       email: 'name@email.com',
     };
 
-    mockingoose(model).toReturn(doc, 'update');
+    mockingoose(model).toReturn(_doc, 'update');
 
     return model
       .update({ name: 'changed' }) // this won't really change anything
