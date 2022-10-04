@@ -19,7 +19,7 @@ declare const ops: [
   'aggregate'
 ];
 declare type Ops = typeof ops[number];
-declare type ReturnFunction = (param: mongoose.Query<any> | mongoose.Aggregate<any>) => {};
+declare type ReturnFunction = (param: mongoose.Query<any, any, any, any> | mongoose.Aggregate<any>) => {};
 declare type ExpectedReturnType = string | number | boolean | symbol | object | {} | void | null | undefined;
 interface Mock {
   /**
