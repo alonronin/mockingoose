@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const mockingoose = require('../');
 const User = require('./User');
 
+jest.setTimeout(15000);
+
 describe('mockingoose', () => {
   beforeEach(() => {
     mockingoose.resetAll();
@@ -372,7 +374,7 @@ describe('mockingoose', () => {
     });
 
     it('should create returns mock', async () => {
-      mockingoose(User).toReturn({ _id: '507f191e810c19729de860ea' }, 'save');
+      mockingoose(User).toReturn({ _id: '507f191e810c19729de860ea' }, '$save');
 
       const result = await User.create({ email: 'name@mail.com' });
       expect(JSON.parse(JSON.stringify(result))).toMatchObject({
@@ -393,7 +395,7 @@ describe('mockingoose', () => {
 
     it('should return error', async () => {
       const error = new Error('My Error');
-      mockingoose(User).toReturn(error, 'save');
+      mockingoose(User).toReturn(error, '$save');
       await expect(
         User.create({ name: 'name', email: 'name@mail.com' }),
       ).rejects.toEqual(error);
