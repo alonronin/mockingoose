@@ -44,7 +44,7 @@ const ops = [
 const mockedReturn = async function(cb) {
   const {
     op,
-    model: { modelName },
+    _model: { modelName },
     _mongooseOptions = {},
   } = this;
   const Model = mongoose.model(modelName);
@@ -187,6 +187,8 @@ ops.forEach(op => {
 });
 
 mongoose.Query.prototype.exec = jest.fn().mockImplementation(function(cb) {
+  this._model = this.model;
+  delete this.model;
   return mockedReturn.call(this, cb);
 });
 
@@ -226,6 +228,8 @@ mongoose.Model.insertMany = jest
   .fn()
   .mockImplementation(function(arr, options, cb) {
     const op = 'insertMany';
+    this._model = this.model;
+    delete this.model;
     const { modelName } = this;
 
     if (typeof options === 'function') {
@@ -235,7 +239,7 @@ mongoose.Model.insertMany = jest
       this._mongooseOptions = options;
     }
 
-    Object.assign(this, { op, model: { modelName }})
+    Object.assign(this, { op, _model: { modelName }});
     return mockedReturn.call(this, cb);
   })
 
@@ -246,13 +250,15 @@ instance.forEach(methodName => {
     .fn()
     .mockImplementation(function(options, cb) {
       const op = methodName;
+      this._model = this.model;
+      delete this.model;
       const { modelName } = this.constructor;
 
       if (typeof options === 'function') {
         cb = options;
       }
 
-      Object.assign(this, { op, model: { modelName } });
+      Object.assign(this, { op, _model: { modelName } });
 
       const hooks = this.constructor.hooks;
 
@@ -262,7 +268,6 @@ instance.forEach(methodName => {
             reject(err);
             return;
           }
-
           const ret = mockedReturn.call(this, cb);
 
           if (cb) {
