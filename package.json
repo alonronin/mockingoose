@@ -1,6 +1,6 @@
 {
   "name": "mockingoose",
-  "version": "2.15.3",
+  "version": "2.16.0",
   "description": "A Jest package for mocking mongoose models",
   "main": "./lib",
   "types": "./types.d.ts",
@@ -25,10 +25,10 @@
   },
   "homepage": "https://github.com/alonronin/mockingoose#readme",
   "devDependencies": {
-    "@babel/cli": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
-    "jest": "^26.6.3",
-    "prettier": "^2.2.1"
+    "@babel/cli": "^7.19.3",
+    "@babel/preset-env": "^7.20.2",
+    "jest": "^29.3.1",
+    "prettier": "^2.8.0"
   },
   "peerDependencies": {
     "mongoose": ">=4.9.10"

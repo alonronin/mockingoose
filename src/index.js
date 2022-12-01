@@ -39,7 +39,7 @@ const ops = [
   'deleteMany',
   'save',
   'aggregate',
-  '$save',
+  '$save'
 ];
 
 const mockedReturn = async function(cb) {
