@@ -151,6 +151,10 @@ ops.forEach(op => {
         this.merge(doc);
       }
 
+      if (/update/i.test(op) && typeof doc !== 'function' && doc) {
+        this.setUpdate(doc);
+      }
+
       switch (arguments.length) {
         case 4:
         case 3:
