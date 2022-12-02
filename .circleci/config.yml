@@ -1,8 +1,8 @@
-version: 2
+version: 2.1
 jobs:
   test:
     docker:
-    - image: circleci/node:latest
+    - image: cimg/node:latest
 
     working_directory: ~/repo
 
