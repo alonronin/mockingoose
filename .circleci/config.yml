@@ -21,7 +21,6 @@ jobs:
         paths:
         - node_modules
         key: npm-cache-{{ checksum "package.json" }}
-
   lint:
     docker:
     - image: cimg/node:current
@@ -30,6 +29,18 @@ jobs:
 
     steps:
     - checkout
+
+    # - restore_cache:
+    #     keys:
+    #     - npm-cache-{{ checksum "package.json" }}
+
+    # - run: yarn
+    # - run: yarn lint
+
+    # - save_cache:
+    #     paths:
+    #     - node_modules
+    #     key: npm-cache-{{ checksum "package.json" }}
 
 workflows:
   version: 2
