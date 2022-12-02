@@ -4,9 +4,7 @@ if (!/^5/.test(mongoose.version)) {
   mongoose.Promise = Promise;
 }
 
-mongoose.connect = jest
-  .fn()
-  .mockImplementation(() => Promise.resolve());
+mongoose.connect = jest.fn().mockImplementation(() => Promise.resolve());
 
 mongoose.createConnection = jest.fn().mockReturnValue({
   catch() {
@@ -39,10 +37,10 @@ const ops = [
   'deleteMany',
   'save',
   'aggregate',
-  '$save'
+  '$save',
 ];
 
-const mockedReturn = async function(cb) {
+const mockedReturn = async function (cb) {
   const {
     op,
     model: { modelName },
@@ -88,21 +86,21 @@ const mockedReturn = async function(cb) {
     ].includes(op)
   ) {
     mock = Array.isArray(mock)
-      ? mock.map(item => new Model(item))
+      ? mock.map((item) => new Model(item))
       : new Model(mock);
 
-    if(op === 'insertMany') {
-      if(!Array.isArray(mock)) mock = [mock];
+    if (op === 'insertMany') {
+      if (!Array.isArray(mock)) mock = [mock];
 
-      for(const doc of mock) {
+      for (const doc of mock) {
         const e = doc.validateSync();
-        if(e) throw e;
+        if (e) throw e;
       }
     }
 
     if (_mongooseOptions.lean || _mongooseOptions.rawResult) {
       mock = Array.isArray(mock)
-        ? mock.map(item => item.toObject())
+        ? mock.map((item) => item.toObject())
         : mock.toObject();
     }
   }
@@ -118,10 +116,10 @@ const mockedReturn = async function(cb) {
   return mock;
 };
 
-ops.forEach(op => {
+ops.forEach((op) => {
   mongoose.Query.prototype[op] = jest
     .fn()
-    .mockImplementation(function(criteria, doc, options, callback) {
+    .mockImplementation(function (criteria, doc, options, callback) {
       if (
         [
           'find',
@@ -191,13 +189,13 @@ ops.forEach(op => {
     });
 });
 
-mongoose.Query.prototype.exec = jest.fn().mockImplementation(function(cb) {
+mongoose.Query.prototype.exec = jest.fn().mockImplementation(function (cb) {
   return mockedReturn.call(this, cb);
 });
 
 mongoose.Aggregate.prototype.exec = jest
   .fn()
-  .mockImplementation(async function(cb) {
+  .mockImplementation(async function (cb) {
     const {
       _model: { modelName },
     } = this;
@@ -229,7 +227,7 @@ mongoose.Aggregate.prototype.exec = jest
 
 mongoose.Model.insertMany = jest
   .fn()
-  .mockImplementation(function(arr, options, cb) {
+  .mockImplementation(function (arr, options, cb) {
     const op = 'insertMany';
     const { modelName } = this;
 
@@ -240,16 +238,16 @@ mongoose.Model.insertMany = jest
       this._mongooseOptions = options;
     }
 
-    Object.assign(this, { op, model: { modelName }})
+    Object.assign(this, { op, model: { modelName } });
     return mockedReturn.call(this, cb);
-  })
+  });
 
 const instance = ['remove', 'save', '$save'];
 
-instance.forEach(methodName => {
+instance.forEach((methodName) => {
   mongoose.Model.prototype[methodName] = jest
     .fn()
-    .mockImplementation(function(options, cb) {
+    .mockImplementation(function (options, cb) {
       const op = methodName;
       const { modelName } = this.constructor;
 
@@ -262,7 +260,7 @@ instance.forEach(methodName => {
       const hooks = this.constructor.hooks;
 
       return new Promise((resolve, reject) => {
-        hooks.execPre(op, this, [cb], err => {
+        hooks.execPre(op, this, [cb], (err) => {
           if (err) {
             reject(err);
             return;
@@ -271,7 +269,7 @@ instance.forEach(methodName => {
           const ret = mockedReturn.call(this, cb);
 
           if (cb) {
-            hooks.execPost(op, this, [ret], err2 => {
+            hooks.execPost(op, this, [ret], (err2) => {
               if (err2) {
                 reject(err2);
                 return;
@@ -281,8 +279,8 @@ instance.forEach(methodName => {
             });
           } else {
             ret
-              .then(ret2 => {
-                hooks.execPost(op, this, [ret2], err3 => {
+              .then((ret2) => {
+                hooks.execPost(op, this, [ret2], (err3) => {
                   if (err3) {
                     reject(err3);
                     return;
@@ -311,7 +309,7 @@ const proxyTarget = Object.assign(() => void 0, {
   },
 });
 
-const getMockController = prop => {
+const getMockController = (prop) => {
   return {
     toReturn(o, op = 'find') {
       proxyTarget.__mocks.hasOwnProperty(prop)
