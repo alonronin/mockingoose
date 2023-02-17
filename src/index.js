@@ -195,8 +195,7 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function (cb) {
 
 mongoose.Query.prototype.orFail = jest
   .fn()
-  .mockImplementation(async function (err, _) {
-
+  .mockImplementation(async function (err) {
     return this.then((doc) => {
       const hasAnyDocs = doc && Array.isArray(doc) && doc.length > 0;
 
