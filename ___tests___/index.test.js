@@ -520,6 +520,34 @@ describe('mockingoose', () => {
 
       expect(result).toBe(doc);
     });
+
+    it('should return error in orFail() if we pass null', async () => {
+      mockingoose(User).toReturn(null, 'findOne');
+
+      await expect(User.findOne().orFail()).rejects.toEqual(new Error());
+    });
+
+    it('should return our custom error in orFail() if we pass null', async () => {
+      const error = new Error('Empty Document');
+      mockingoose(User).toReturn(error, 'findOne');
+
+      await expect(User.findOne().orFail()).rejects.toEqual(error);
+    });
+
+    it('should return error in orFail() with find() if we pass null', async () => {
+      mockingoose(User).toReturn(null, 'find');
+
+      await expect(User.findOne().orFail()).rejects.toEqual(new Error());
+    });
+
+    it('should pass orFail() if there are some doc exist', async () => {
+      const doc = [{ _id: 'abc' }];
+      mockingoose(User).toReturn(doc, 'find');
+
+      const result = await User.find().orFail();
+
+      expect(result.length).toEqual(doc.length);
+    });
   });
 
   describe('check all instance methods', () => {
