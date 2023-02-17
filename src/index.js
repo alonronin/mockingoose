@@ -193,6 +193,26 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function (cb) {
   return mockedReturn.call(this, cb);
 });
 
+mongoose.Query.prototype.orFail = jest
+  .fn()
+  .mockImplementation(async function (err, _) {
+
+    return this.then((doc) => {
+      const hasAnyDocs = doc && Array.isArray(doc) && doc.length > 0;
+
+      if (!doc || !hasAnyDocs) {
+        if (!err) throw new Error();
+
+        const isErrorFn = typeof err === 'function';
+        throw isErrorFn ? err() : new Error(err);
+      }
+
+      return this;
+    }).catch((err) => {
+      throw err;
+    });
+  });
+
 mongoose.Aggregate.prototype.exec = jest
   .fn()
   .mockImplementation(async function (cb) {
