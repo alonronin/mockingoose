@@ -59,4 +59,4 @@ declare const mockingoose: Proxy;
  * @param {string | mongoose.Model} model either a string model name, or a mongoose.Model instance
  */
 declare const mockModel: (model: string | mongoose.Model<any, {}>) => Mock;
-export default mockingoose;
+export = mockingoose;
