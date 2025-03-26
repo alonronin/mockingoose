@@ -193,6 +193,43 @@ mongoose.Query.prototype.exec = jest.fn().mockImplementation(function (cb) {
   return mockedReturn.call(this, cb);
 });
 
+mongoose.Query.prototype.cursor = jest.fn().mockImplementation(function(options) {
+  this.op = 'find';
+  const self = this;
+  
+  // Create generator function to maintain state
+  async function* createIterator(query) {
+    const data = await mockedReturn.call(query);
+    const items = Array.isArray(data) ? data : [data];
+    for (const item of items) {
+      yield item;
+    }
+  }
+
+  // Create single iterator instance to share across all methods
+  const iterator = createIterator(this);
+  let nextResult = null;
+
+  return {
+    [Symbol.asyncIterator]() {
+      return createIterator(self); // Create new iterator for for-await loops
+    },
+    // These methods are still needed for compatibility with Mongoose's cursor API
+    async next() {
+      const result = await iterator.next();
+      nextResult = result;
+      return result.value || null;
+    },
+    async hasNext() {
+      if (!nextResult || nextResult.done) {
+        return false;
+      }
+      return true;
+    },
+    close: jest.fn().mockImplementation(() => Promise.resolve())
+  };
+});
+
 mongoose.Query.prototype.orFail = jest
   .fn()
   .mockImplementation(async function (err) {
