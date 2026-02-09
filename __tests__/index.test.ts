@@ -493,7 +493,7 @@ describe('mockingoose', () => {
       const mocked = { email: 'name@email.com', name: '$save' };
       mockingoose(User).toReturn(mocked, 'findOne').toReturn(mocked, '$save');
       const user = await User.findOne();
-      const saved = await user!.$save();
+      const saved = await (user as any).$save();
       expect(saved).toBeTruthy();
       expect(saved.toObject()).toMatchObject(mocked);
     });
