@@ -23,7 +23,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "prettier -c src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",
