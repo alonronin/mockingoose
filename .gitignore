@@ -60,3 +60,6 @@ typings/
 
 # Build output
 dist/
+
+# opensrc - source code for packages
+opensrc/

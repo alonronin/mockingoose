@@ -9,14 +9,14 @@ Mockingoose is a utility for mocking Mongoose models in tests (Jest or Vitest). 
 ## Commands
 
 - **Test:** `bun run test` (all tests) or `npx vitest run --testPathPattern=<pattern>` (single test)
-- **Build:** `bun run build` (tsup: `src/` → `dist/` ESM+CJS)
+- **Build:** `bun run build` (tsdown: `src/` → `dist/` ESM+CJS)
 - **Typecheck:** `bun run typecheck` (tsc --noEmit)
 - **Lint:** `bun run lint` (Prettier check)
 - **Format:** `bunx prettier --write src`
 
 ## Architecture
 
-TypeScript library: `src/index.ts` + `src/types.ts` → compiled to `dist/` via tsup (ESM + CJS dual output with generated `.d.ts`).
+TypeScript library: `src/index.ts` + `src/types.ts` → compiled to `dist/` via tsdown (ESM + CJS dual output with generated `.d.ts`).
 
 ### How It Works
 
