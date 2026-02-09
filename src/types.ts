@@ -17,13 +17,14 @@ export const ops = [
   'aggregate',
   '$save',
   'insertMany',
+  'replaceOne',
+  'bulkWrite',
+  'bulkSave',
 ] as const;
 
 export type Op = (typeof ops)[number];
 
-export type ReturnFunction = (
-  param: Query<any, any> | Aggregate<any>
-) => any;
+export type ReturnFunction = (param: Query<any, any> | Aggregate<any>) => any;
 
 export type MockReturnValue =
   | string
