@@ -149,7 +149,36 @@ beforeEach(() => {
 - `deleteOne` - for deleteOne query
 - `deleteMany` - for deleteMany query
 - `aggregate` - for aggregate framework
+- `replaceOne` - for replaceOne query
 - `insertMany` - for `Model.insertMany()` bulk insert, can also pass `{ lean: true, rawResult: true }` options.
+- `bulkWrite` - for `Model.bulkWrite()` bulk operations
+- `bulkSave` - for `Model.bulkSave()` bulk save
+
+### Cursor Support
+
+You can mock `cursor()` on find queries. The cursor uses the `find` mock data and supports `next()`, `eachAsync()`, `close()`, and `for await...of`:
+
+```ts
+mockingoose(User).toReturn([{ name: 'a' }, { name: 'b' }]);
+
+// next()
+const cursor = User.find().cursor();
+const first = await cursor.next();
+const second = await cursor.next();
+const done = await cursor.next(); // null
+
+// for await...of
+for await (const doc of User.find().cursor()) {
+  console.log(doc);
+}
+
+// eachAsync
+await User.find()
+  .cursor()
+  .eachAsync((doc) => {
+    console.log(doc);
+  });
+```
 
 ### Notes
 

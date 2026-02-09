@@ -3,9 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -18,17 +16,8 @@
     "isolatedDeclarations": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": [
-      "vitest/globals"
-    ]
+    "types": ["vitest/globals"]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "__tests__",
-    "opensrc"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "opensrc"]
 }
