@@ -103,6 +103,9 @@ const mockedReturn = async function (this: any, cb?: Function) {
       'countDocuments',
       'estimatedDocumentCount',
       'distinct',
+      'replaceOne',
+      'bulkWrite',
+      'bulkSave',
     ].includes(op)
   ) {
     mock = Array.isArray(mock)
@@ -139,13 +142,7 @@ const mockedReturn = async function (this: any, cb?: Function) {
 // Patch Query.prototype for each operation
 ops.forEach((op) => {
   (mongoose.Query.prototype as any)[op] = createMockFn().mockImplementation(
-    function (
-      this: any,
-      criteria: any,
-      doc: any,
-      options: any,
-      callback: any,
-    ) {
+    function (this: any, criteria: any, doc: any, options: any, callback: any) {
       if (
         [
           'find',
@@ -158,6 +155,7 @@ ops.forEach((op) => {
           'findOneAndUpdate',
           'findOneAndDelete',
           'findOneAndReplace',
+          'replaceOne',
         ].includes(op) &&
         typeof criteria !== 'function'
       ) {
@@ -208,7 +206,7 @@ ops.forEach((op) => {
       }
 
       return this.exec.call(this, callback);
-    },
+    }
   );
 });
 
@@ -216,7 +214,7 @@ ops.forEach((op) => {
 (mongoose.Query.prototype as any).exec = createMockFn().mockImplementation(
   function (this: any, cb?: Function) {
     return mockedReturn.call(this, cb);
-  },
+  }
 );
 
 // Patch Query.prototype.orFail
@@ -236,7 +234,63 @@ ops.forEach((op) => {
     }).catch((err: any) => {
       throw err;
     });
-  },
+  }
+);
+
+// Patch Query.prototype.cursor
+(mongoose.Query.prototype as any).cursor = createMockFn().mockImplementation(
+  function (this: any) {
+    const query = this;
+    query.op = query.op || 'find';
+
+    let data: any[] | null = null;
+    let index = 0;
+
+    const loadData = async () => {
+      if (data === null) {
+        const result = await mockedReturn.call(query);
+        data = Array.isArray(result) ? result : result ? [result] : [];
+        index = 0;
+      }
+    };
+
+    const cursor: any = {
+      async next() {
+        await loadData();
+        if (index < data!.length) {
+          return data![index++];
+        }
+        return null;
+      },
+      async close() {
+        data = [];
+        index = 0;
+      },
+      async eachAsync(fn: (doc: any, i: number) => any) {
+        await loadData();
+        for (let i = 0; i < data!.length; i++) {
+          await fn(data![i], i);
+        }
+      },
+      [Symbol.asyncIterator]() {
+        let started = false;
+        return {
+          async next() {
+            if (!started) {
+              await loadData();
+              started = true;
+            }
+            if (index < data!.length) {
+              return { value: data![index++], done: false };
+            }
+            return { value: undefined, done: true };
+          },
+        };
+      },
+    };
+
+    return cursor;
+  }
 );
 
 // Patch Aggregate.prototype.exec
@@ -269,7 +323,7 @@ ops.forEach((op) => {
     }
 
     return mock;
-  },
+  }
 );
 
 // Patch Model.insertMany
@@ -287,8 +341,46 @@ ops.forEach((op) => {
 
     Object.assign(this, { op, model: { modelName } });
     return mockedReturn.call(this, cb);
-  },
+  }
 );
+
+// Patch Model.bulkWrite
+(mongoose.Model as any).bulkWrite = createMockFn().mockImplementation(function (
+  this: any,
+  _writes: any,
+  options: any,
+  cb?: Function
+) {
+  const op = 'bulkWrite';
+  const { modelName } = this;
+
+  if (typeof options === 'function') {
+    cb = options;
+    options = null;
+  }
+
+  Object.assign(this, { op, model: { modelName } });
+  return mockedReturn.call(this, cb);
+});
+
+// Patch Model.bulkSave
+(mongoose.Model as any).bulkSave = createMockFn().mockImplementation(function (
+  this: any,
+  _documents: any,
+  options: any,
+  cb?: Function
+) {
+  const op = 'bulkSave';
+  const { modelName } = this;
+
+  if (typeof options === 'function') {
+    cb = options;
+    options = null;
+  }
+
+  Object.assign(this, { op, model: { modelName } });
+  return mockedReturn.call(this, cb);
+});
 
 // Patch instance methods (save, remove, $save)
 const instance = ['save', '$save'] as const;
@@ -298,7 +390,7 @@ instance.forEach((methodName) => {
     createMockFn().mockImplementation(async function (
       this: any,
       options: any,
-      cb?: Function,
+      cb?: Function
     ) {
       const op = methodName;
       const { modelName } = this.constructor;
@@ -380,7 +472,10 @@ const proxyTraps: ProxyHandler<typeof proxyTarget> = {
   apply: (_target, _thisArg, [prop]) => mockModel(prop),
 };
 
-const mockingoose = new Proxy(proxyTarget, proxyTraps) as unknown as Mockingoose;
+const mockingoose = new Proxy(
+  proxyTarget,
+  proxyTraps
+) as unknown as Mockingoose;
 
 export default mockingoose;
 export { mockingoose };
