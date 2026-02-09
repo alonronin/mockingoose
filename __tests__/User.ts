@@ -1,19 +1,16 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const { ObjectId } = Schema.Types;
+import mongoose, { Schema } from 'mongoose';
 
 const schema = new Schema({
   created: { type: Date, default: Date.now },
   email: { type: String, required: true },
-  foreignKey: ObjectId,
+  foreignKey: Schema.Types.ObjectId,
   name: String,
   saveCount: { type: Number, default: 0 },
 });
 
-schema.pre('save', function() {
+schema.pre('save', function () {
   this.saveCount++;
 });
 
 const User = mongoose.model('User', schema);
-
-module.exports = User;
+export default User;
