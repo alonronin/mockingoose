@@ -208,7 +208,7 @@ describe('mockingoose', () => {
 
       const result = await User.updateOne(
         { name: 'name' },
-        { email: 'name@mail.com' },
+        { email: 'name@mail.com' }
       );
       expect(result).toEqual({ ok: 1, nModified: 1, n: 1 });
     });
@@ -216,7 +216,7 @@ describe('mockingoose', () => {
     it('should aggregate with callback', async () => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate',
+        'aggregate'
       );
 
       const result = await User.aggregate([
@@ -256,7 +256,7 @@ describe('mockingoose', () => {
     it('should aggregate with exec and callback', async () => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate',
+        'aggregate'
       );
 
       const result = await User.aggregate([
@@ -276,7 +276,7 @@ describe('mockingoose', () => {
     it('should aggregate with promise', async () => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
-        'aggregate',
+        'aggregate'
       );
 
       const result = await User.aggregate([
@@ -463,6 +463,16 @@ describe('mockingoose', () => {
 
       expect(result.length).toEqual(doc.length);
     });
+
+    it('should replaceOne', async () => {
+      const doc = { acknowledged: true, modifiedCount: 1, matchedCount: 1 };
+      mockingoose(User).toReturn(doc, 'replaceOne');
+      const result = await User.replaceOne(
+        { name: 'test' },
+        { name: 'replaced' }
+      );
+      expect(result).toBe(doc);
+    });
   });
 
   describe('check all instance methods', () => {
@@ -477,6 +487,15 @@ describe('mockingoose', () => {
       const user = await User.findOne();
       const user1 = await user!.save();
       expect(user1).toBeTruthy();
+    });
+
+    it('$save resolves its promise correctly', async () => {
+      const mocked = { email: 'name@email.com', name: '$save' };
+      mockingoose(User).toReturn(mocked, 'findOne').toReturn(mocked, '$save');
+      const user = await User.findOne();
+      const saved = await user!.$save();
+      expect(saved).toBeTruthy();
+      expect(saved.toObject()).toMatchObject(mocked);
     });
 
     it('returns false for exists method', async () => {
@@ -530,11 +549,9 @@ describe('mockingoose', () => {
 
       const result: any = await User.insertMany(docs, { rawResult: true });
 
-      expect(result.map((doc: any) => doc instanceof mongoose.Model)).toStrictEqual([
-        false,
-        false,
-        false,
-      ]);
+      expect(
+        result.map((doc: any) => doc instanceof mongoose.Model)
+      ).toStrictEqual([false, false, false]);
     });
   });
 
@@ -546,6 +563,7 @@ describe('mockingoose', () => {
       'findOneAndUpdate',
       'findOneAndDelete',
       'findOneAndReplace',
+      'replaceOne',
       'updateOne',
       'updateMany',
       'deleteOne',
@@ -563,15 +581,17 @@ describe('mockingoose', () => {
 
           const args: any[] = [];
 
-          if (['updateOne', 'updateMany'].includes(op)) {
+          if (['updateOne', 'updateMany', 'replaceOne'].includes(op)) {
             args.push({}, {});
           }
 
-          return (User as any)[op](...args).then((doc: any) =>
-            expect(
-              doc instanceof mongoose.Model ? doc.toObject() : doc,
-            ).toMatchObject(mocked),
-          );
+          return (User as any)
+            [op](...args)
+            .then((doc: any) =>
+              expect(
+                doc instanceof mongoose.Model ? doc.toObject() : doc
+              ).toMatchObject(mocked)
+            );
         });
       });
     });
@@ -587,13 +607,13 @@ describe('mockingoose', () => {
 
           const args: any[] = [];
 
-          if (['updateOne', 'updateMany'].includes(op)) {
+          if (['updateOne', 'updateMany', 'replaceOne'].includes(op)) {
             args.push({}, {});
           }
 
           const doc = await (User as any)[op](...args).exec();
           expect(
-            doc instanceof mongoose.Model ? doc.toObject() : doc,
+            doc instanceof mongoose.Model ? doc.toObject() : doc
           ).toMatchObject(mocked);
         });
       });
@@ -620,16 +640,144 @@ describe('mockingoose', () => {
             case 'updateOne':
             case 'updateMany':
             case 'findOneAndUpdate':
+            case 'replaceOne':
               args.push({}, {});
               break;
           }
 
           const doc = await (User as any)[op](...args);
           expect(
-            doc instanceof mongoose.Model ? doc.toObject() : doc,
+            doc instanceof mongoose.Model ? doc.toObject() : doc
           ).toMatchObject(mocked);
         });
       });
+    });
+  });
+
+  describe('bulkWrite', () => {
+    it('should mock bulkWrite', async () => {
+      const mockResult = {
+        insertedCount: 1,
+        modifiedCount: 0,
+        deletedCount: 0,
+      };
+      mockingoose(User).toReturn(mockResult, 'bulkWrite');
+      const result = await User.bulkWrite([
+        { insertOne: { document: { name: 'test', email: 'test@mail.com' } } },
+      ]);
+      expect(result).toBe(mockResult);
+    });
+
+    it('should mock bulkWrite with function', async () => {
+      mockingoose(User).toReturn(() => {
+        return { insertedCount: 2, modifiedCount: 0, deletedCount: 0 };
+      }, 'bulkWrite');
+      const result = await User.bulkWrite([
+        { insertOne: { document: { name: 'a', email: 'a@mail.com' } } },
+        { insertOne: { document: { name: 'b', email: 'b@mail.com' } } },
+      ]);
+      expect(result).toEqual({
+        insertedCount: 2,
+        modifiedCount: 0,
+        deletedCount: 0,
+      });
+    });
+
+    it('should mock bulkWrite with error', async () => {
+      mockingoose(User).toReturn(new Error('bulkWrite failed'), 'bulkWrite');
+      await expect(
+        User.bulkWrite([
+          { insertOne: { document: { name: 'test', email: 'test@mail.com' } } },
+        ])
+      ).rejects.toThrow('bulkWrite failed');
+    });
+  });
+
+  describe('bulkSave', () => {
+    it('should mock bulkSave', async () => {
+      const mockResult = {
+        insertedCount: 2,
+        modifiedCount: 0,
+        deletedCount: 0,
+      };
+      mockingoose(User).toReturn(mockResult, 'bulkSave');
+      const docs = [
+        new User({ name: 'a', email: 'a@mail.com' }),
+        new User({ name: 'b', email: 'b@mail.com' }),
+      ];
+      const result = await User.bulkSave(docs);
+      expect(result).toBe(mockResult);
+    });
+  });
+
+  describe('cursor support', () => {
+    it('should iterate with next()', async () => {
+      mockingoose(User).toReturn([
+        { name: 'a', email: 'a@b.com' },
+        { name: 'b', email: 'b@b.com' },
+      ]);
+      const cursor = User.find().cursor();
+      const first = await cursor.next();
+      const second = await cursor.next();
+      const third = await cursor.next();
+      expect(first!.toObject()).toMatchObject({ name: 'a' });
+      expect(second!.toObject()).toMatchObject({ name: 'b' });
+      expect(third).toBeNull();
+    });
+
+    it('should iterate with for-await-of', async () => {
+      mockingoose(User).toReturn([
+        { name: 'x', email: 'x@b.com' },
+        { name: 'y', email: 'y@b.com' },
+      ]);
+      const results: any[] = [];
+      for await (const doc of User.find().cursor()) {
+        results.push(doc);
+      }
+      expect(results).toHaveLength(2);
+      expect(results[0].toObject()).toMatchObject({ name: 'x' });
+      expect(results[1].toObject()).toMatchObject({ name: 'y' });
+    });
+
+    it('should support eachAsync', async () => {
+      mockingoose(User).toReturn([
+        { name: 'p', email: 'p@b.com' },
+        { name: 'q', email: 'q@b.com' },
+      ]);
+      const collected: any[] = [];
+      await User.find()
+        .cursor()
+        .eachAsync((doc: any) => {
+          collected.push(doc.toObject());
+        });
+      expect(collected).toHaveLength(2);
+      expect(collected[0]).toMatchObject({ name: 'p' });
+    });
+
+    it('should support close()', async () => {
+      mockingoose(User).toReturn([{ name: 'a', email: 'a@b.com' }]);
+      const cursor = User.find().cursor();
+      await cursor.close();
+      const result = await cursor.next();
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('delegated operations', () => {
+    it('findByIdAndUpdate delegates to findOneAndUpdate mock', async () => {
+      const doc = { name: 'updated', email: 'a@b.com' };
+      mockingoose(User).toReturn(doc, 'findOneAndUpdate');
+      const result = await User.findByIdAndUpdate('507f191e810c19729de860ea', {
+        name: 'updated',
+      });
+      expect(result!.toObject()).toMatchObject(doc);
+    });
+
+    it('findByIdAndDelete delegates to findOneAndDelete mock', async () => {
+      const doc = { name: 'deleted', email: 'a@b.com' };
+      mockingoose(User).toReturn(doc, 'findOneAndDelete');
+      const result = await User.findByIdAndDelete('507f191e810c19729de860ea');
+      expect(result!.toObject()).toMatchObject(doc);
     });
   });
 
