@@ -248,7 +248,7 @@ All operations work with `exec` and `promise` patterns.
 
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
-[logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
+[logo]: mockingoose.png
 
 ### Shoutout to our amazing community
 
