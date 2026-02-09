@@ -647,8 +647,8 @@ describe('mockingoose', () => {
     it('createConnection with callback', async () => {
       const conn = mongoose.createConnection('mongodb://localhost/test');
 
-      conn.once('open', console.log);
-      conn.on('error', console.error);
+      (conn as any).once('open', console.log);
+      (conn as any).on('error', console.error);
 
       const result = await conn;
       expect(result).toBe(conn);
