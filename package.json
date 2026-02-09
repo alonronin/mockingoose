@@ -17,11 +17,14 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
+    "format": "prettier --write .",
     "lint": "prettier -c src",
     "typecheck": "tsc --noEmit -p tsconfig.build.json"
   },
