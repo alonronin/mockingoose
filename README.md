@@ -1,84 +1,70 @@
-# Mockingoose [![CircleCI](https://circleci.com/gh/alonronin/mockingoose/tree/master.svg?style=svg)](https://circleci.com/gh/alonronin/mockingoose/tree/master)
+# Mockingoose [![CI](https://github.com/alonronin/mockingoose/actions/workflows/ci.yml/badge.svg)](https://github.com/alonronin/mockingoose/actions/workflows/ci.yml)
 
 ![logo]
 
-> A Jest package for mocking mongoose models
+> A package for mocking Mongoose models — works with Jest and Vitest
 
 ## Installation
 
-With NPM:
 ```bash
-$ npm i mockingoose -D
+npm i mockingoose -D
 ```
 
-With Yarn:
-```bash
-$ yarn add mockingoose -D
-```
+## Import
 
-## Import the library
+```ts
+// ESM / TypeScript
+import mockingoose from 'mockingoose';
 
-```js
+// CommonJS
 const mockingoose = require('mockingoose');
-
 ```
 
 ## Usage
 
-```js
-// user.js
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+```ts
+// user.ts
+import mongoose, { Schema } from 'mongoose';
 
-const schema = Schema({
+const schema = new Schema({
   name: String,
   email: String,
   created: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('User', schema);
+export default mongoose.model('User', schema);
 ```
 
 #### mockingoose(Model).toReturn(obj, operation = 'find')
 
 Returns a plain object.
 
-```js
-// __tests__/user.test.js
-const mockingoose = require('mockingoose');
-
-const model = require('./user');
+```ts
+// __tests__/user.test.ts
+import mockingoose from 'mockingoose';
+import User from './user';
 
 describe('test mongoose User model', () => {
-  it('should return the doc with findById', () => {
+  it('should return the doc with findById', async () => {
     const _doc = {
       _id: '507f191e810c19729de860ea',
       name: 'name',
       email: 'name@email.com',
     };
 
-    mockingoose(model).toReturn(_doc, 'findOne');
+    mockingoose(User).toReturn(_doc, 'findOne');
 
-    return model.findById({ _id: '507f191e810c19729de860ea' }).then(doc => {
-      expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-    });
+    const doc = await User.findById('507f191e810c19729de860ea');
+    expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
   });
 
-  it('should return the doc with update', () => {
-    const _doc = {
-      _id: '507f191e810c19729de860ea',
-      name: 'name',
-      email: 'name@email.com',
-    };
+  it('should return the doc with updateOne', async () => {
+    const _doc = { ok: 1, nModified: 1, n: 1 };
 
-    mockingoose(model).toReturn(_doc, 'update');
+    mockingoose(User).toReturn(_doc, 'updateOne');
 
-    return model
-      .update({ name: 'changed' }) // this won't really change anything
-      .where({ _id: '507f191e810c19729de860ea' })
-      .then(doc => {
-        expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-      });
+    const result = await User.updateOne({ name: 'changed' }, {});
+    expect(result).toMatchObject(_doc);
   });
 });
 ```
@@ -89,55 +75,48 @@ Allows passing a function in order to return the result.
 
 You will be able to inspect the query using the parameter passed to the function. This will be either a Mongoose [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) class, depending on your usage.
 
-You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatically test that the queries sent out are valid.
-
-```js
-// __tests__/user.test.js
-const mockingoose = require('mockingoose');
-const model = require('./user');
+```ts
+import mockingoose from 'mockingoose';
+import User from './user';
 
 describe('test mongoose User model', () => {
-  it('should return the doc with findById', () => {
+  it('should return the doc with findById', async () => {
     const _doc = {
       _id: '507f191e810c19729de860ea',
       name: 'name',
       email: 'name@email.com',
     };
-    const finderMock = query => {
-      expect(query.getQuery()).toMatchSnapshot('findById query');
 
+    const finderMock = (query: any) => {
       if (query.getQuery()._id === '507f191e810c19729de860ea') {
         return _doc;
       }
     };
 
-    mockingoose(model).toReturn(finderMock, 'findOne'); // findById is findOne
+    mockingoose(User).toReturn(finderMock, 'findOne');
 
-    return model.findById('507f191e810c19729de860ea').then(doc => {
-      expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-    });
+    const doc = await User.findById('507f191e810c19729de860ea');
+    expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
   });
 });
 ```
 
 #### mockingoose(Model).reset(operation = undefined)
 
-will reset Model mock, if pass an operation, will reset only this operation mock.
+Will reset Model mock. If passed an operation, will reset only that operation's mock.
 
-```js
-it('should reset model mock', () => {
-  mockingoose(model).toReturn({ name: '1' });
-  mockingoose(model).toReturn({ name: '2' }, 'save');
+```ts
+mockingoose(User).toReturn({ name: '1' });
+mockingoose(User).toReturn({ name: '2' }, 'save');
 
-  mockingoose(model).reset(); // will reset all operations;
-  mockingoose(model).reset('find'); // will reset only find operations;
-});
+mockingoose(User).reset(); // will reset all operations
+mockingoose(User).reset('find'); // will reset only find operation
 ```
 
-you can also chain `mockingoose#ModelName` operations:
+You can also chain operations:
 
-```js
-mockingoose(model)
+```ts
+mockingoose(User)
   .toReturn({ name: 'name' })
   .toReturn({ name: 'a name too' }, 'findOne')
   .toReturn({ name: 'another name' }, 'save')
@@ -146,9 +125,9 @@ mockingoose(model)
 
 #### mockingoose.resetAll()
 
-will reset all mocks.
+Will reset all mocks.
 
-```js
+```ts
 beforeEach(() => {
   mockingoose.resetAll();
 });
@@ -156,52 +135,49 @@ beforeEach(() => {
 
 ### Operations available:
 
-- [x] `find` - for find query
-- [x] `findOne` - for findOne query
-- [x] `count` - for count query (deprecated)
-- [x] `countDocuments` for count query
-- [x] `estimatedDocumentCount` for count collection documents
-- [x] `distinct` - for distinct query
-- [x] `findOneAndUpdate` - for findOneAndUpdate query
-- [x] `findOneAndRemove` - for findOneAndRemove query
-- [x] `update` - for update query (DEPRECATED)
-- [x] `updateOne` - for updateOne query
-- [x] `updateMany` - for updateMany query
-- [x] `save` - for create, and save documents `Model.create()` or `Model.save()` or `doc.save()`
-- [x] `remove` - for remove query (DEPRECATED)
-- [x] `deleteOne` - for deleteOne query
-- [x] `deleteMany` - for deleteMany query
-- [x] `aggregate` - for aggregate framework
-- [x] `insertMany` - for `Model.insertMany()` bulk insert, can also pass `{ lean: true, rawResult: true }` options.
+- `find` - for find query
+- `findOne` - for findOne query
+- `countDocuments` - for count query
+- `estimatedDocumentCount` - for count collection documents
+- `distinct` - for distinct query
+- `findOneAndUpdate` - for findOneAndUpdate query
+- `findOneAndDelete` - for findOneAndDelete query
+- `findOneAndReplace` - for findOneAndReplace query
+- `updateOne` - for updateOne query
+- `updateMany` - for updateMany query
+- `save` - for create, and save documents `Model.create()` or `Model.save()` or `doc.save()`
+- `deleteOne` - for deleteOne query
+- `deleteMany` - for deleteMany query
+- `aggregate` - for aggregate framework
+- `insertMany` - for `Model.insertMany()` bulk insert, can also pass `{ lean: true, rawResult: true }` options.
 
 ### Notes
 
-All operations work with `exec`, `promise` and `callback`.
+All operations work with `exec` and `promise` patterns.
 
-- if you are using `Model.create` and you don't pass a mock with mockingoose you'll receive the mongoose created doc (with ObjectId and transformations)
+- If you are using `Model.create` and you don't pass a mock with mockingoose you'll receive the mongoose created doc (with ObjectId and transformations)
 
-- validations are working as expected.
+- Validations work as expected.
 
-- the returned document is an instance of mongoose Model.
+- The returned document is an instance of mongoose Model.
 
-- `deleteOne` and `updateOne` operation returns original mocked object.
+- `deleteOne` and `updateOne` operations return the original mocked object.
 
-- you can simulate Error by passing an Error to mockingoose:
+- You can simulate errors by passing an Error to mockingoose:
 
-  ```js
-  mockingoose(model).toReturn(new Error('My Error'), 'save');
+  ```ts
+  mockingoose(User).toReturn(new Error('My Error'), 'save');
 
-  return model.create({ name: 'name', email: 'name@email.com' }).catch(err => {
-    expect(err.message).toBe('My Error');
-  });
+  await expect(
+    User.create({ name: 'name', email: 'name@email.com' })
+  ).rejects.toThrow('My Error');
   ```
 
-- you can mock `.populate` in your mocked result just be sure to change 
-  the `Schema`'s path to appropriate type (eg: `Object` | `Mixed`):
-  
-  ```js
+- You can mock `.populate` in your mocked result — just change the Schema's path to appropriate type (e.g., `Object` | `Mixed`):
+
+  ```ts
   User.schema.path('foreignKey', Object);
-  
+
   const doc = {
     email: 'test@mail.com',
     foreignKey: {
@@ -212,29 +188,34 @@ All operations work with `exec`, `promise` and `callback`.
     name: 'Name',
     saveCount: 1,
   };
-    
+
   mockingoose(User).toReturn(doc);
-    
+
   const result = await User.find();
-    
   expect(result).toMatchObject(doc);
   ```
 
-- you can mock the `Model.exists()` by passing the `findOne` operator. see [Issue #69](https://github.com/alonronin/mockingoose/issues/69)
-  
-- no connection is made to the database (mongoose.connect is jest.fn())
+- You can mock `Model.exists()` via the `findOne` operation. See [Issue #69](https://github.com/alonronin/mockingoose/issues/69)
 
-- will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
+- No connection is made to the database (mongoose.connect is mocked)
 
-- check tests for more, feel free to fork and contribute.
+- Requires Node.js 18+ and Mongoose 9+. Tested with Vitest and Jest.
 
-#### Recent Changes:
+### v3.0.0 Breaking Changes
 
-- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the now the recommended usage, with `Model` being a Mongoose model class.
+- Rewritten in TypeScript with full type exports
+- Requires Node.js >= 18 and Mongoose >= 9
+- Removed deprecated operations: `count`, `update`, `remove`, `findOneAndRemove`
+- ESM + CJS dual package (use `import` or `require`)
+- Tests use Vitest (Jest still supported at runtime)
+
+#### Notes:
+
+- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the recommended usage, with `Model` being a Mongoose model class.
 
   Alternatively, you may pass a string with the model name.
 
-- `mockingoose(Model).toReturn((query) => value)` can now take also take a function as a parameter.
+- `mockingoose(Model).toReturn((query) => value)` can also take a function as a parameter.
 
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
