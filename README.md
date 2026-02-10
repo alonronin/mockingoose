@@ -254,8 +254,8 @@ All operations work with `exec` and `promise` patterns.
 
 #### Stargazers
 
-[![Stargazers repo roster for @alonronin/mockingoose](https://reporoster.com/stars/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/stargazers)
+[![Stargazers repo roster for @alonronin/mockingoose](https://reporoster.com/stars/dark/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/stargazers)
 
 #### Forkers
 
-[![Forkers repo roster for @alonronin/mockingoose](https://reporoster.com/forks/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/network/members)
+[![Forkers repo roster for @alonronin/mockingoose](https://reporoster.com/forks/dark/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/network/members)
